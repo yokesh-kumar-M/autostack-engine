@@ -222,12 +222,12 @@ autostack-engine/
 
 #### Deployment Tasks
 - [x] Create `backend/server.js` — Express API server (CORS, routes, middleware)
-- [ ] Create Render.com account (sign up with GitHub)
-- [ ] New Web Service → Connect GitHub repo
-- [ ] Configure build: `npm install` | Start: `node backend/server.js`
-- [ ] Set all environment variables in Render dashboard
-- [ ] Deploy and get public URL (e.g., `myapp.onrender.com`)
-- [ ] Update `frontend/app.js` — Set `API_BASE` to Render URL
+- [x] Create Render.com account (sign up with GitHub)
+- [x] New Web Service → Connect GitHub repo
+- [x] Configure build: `npm install` | Start: `node backend/server.js`
+- [x] Set all environment variables in Render dashboard
+- [x] Deploy and get public URL (e.g., `myapp.onrender.com`)
+- [x] Update `frontend/app.js` — Set `API_BASE` to Render URL
 - [ ] Test API endpoint from browser/Postman
 - [ ] Set up UptimeRobot.com (free) to ping app every 5 min (prevent sleep)
 

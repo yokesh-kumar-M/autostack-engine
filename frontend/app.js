@@ -4,7 +4,7 @@
 // ===== Configuration =====
 const CONFIG = {
     // Update this to your Render.com URL after deployment
-    API_BASE: 'https://your-app.onrender.com',
+    API_BASE: 'https://niche-report-api.onrender.com',
     MAX_FREE_REPORTS: 3,
     LOADING_STEP_DELAYS: [2000, 5000, 9000, 14000, 18000], // ms delays for loading steps
 };
@@ -176,7 +176,7 @@ function displayReport(report) {
                     keyword: report.keyword,
                     url: link.href,
                 }),
-            }).catch(() => {}); // Fire and forget
+            }).catch(() => { }); // Fire and forget
         });
     });
 }
