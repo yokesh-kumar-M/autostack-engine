@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Report — NicheReport.ai | Free AI Niche Research</title>
+    <meta name="description" content="Generate your free AI-powered niche research report. Enter any keyword and get competitor analysis, monetization strategies, and actionable insights in seconds.">
+    <meta name="robots" content="noindex">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="NicheReport.ai — Generate Your Free Report">
+    <meta property="og:description" content="AI-powered niche research in 30 seconds. Try it free.">
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'GA_MEASUREMENT_ID');
+    </script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar scrolled">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">◆</span> NicheReport<span class="gold">.ai</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#how-it-works">How It Works</a>
+                <a href="index.html#faq">FAQ</a>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+        </div>
+    </nav>
+
+    <!-- App Container -->
+    <div class="app-container">
+        <div class="container">
+            <!-- App Header -->
+            <div class="app-header">
+                <h1>Generate Your <span class="gold">Niche Report</span></h1>
+                <p>Enter any keyword or topic below. Our AI will analyze the market in under 30 seconds.</p>
+            </div>
+
+            <!-- Search Form -->
+            <div class="app-form-container">
+                <form id="reportForm">
+                    <div class="app-input-group">
+                        <input 
+                            type="text" 
+                            id="keywordInput"
+                            class="app-input" 
+                            placeholder="Enter a niche or keyword (e.g. 'AI writing tools')"
+                            required
+                            autocomplete="off"
+                        >
+                        <button type="submit" class="btn btn-primary" id="generateBtn">
+                            Generate Report →
+                        </button>
+                    </div>
+                    <div class="email-row">
+                        <input 
+                            type="email" 
+                            id="emailInput"
+                            class="app-input" 
+                            placeholder="Email (optional — get a copy sent to you)"
+                        >
+                    </div>
+                    <p class="email-hint">📧 We'll send you the full report + weekly niche insights. No spam, ever.</p>
+                    <p class="rate-limit-notice">⚡ Free tier: <strong>3 reports per day</strong>. Need more? <a href="#">Upgrade to Premium</a></p>
+                </form>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-container" id="loadingContainer">
+                <div class="spinner"></div>
+                <p class="loading-text">Generating your niche report...</p>
+                <div class="loading-steps">
+                    <span class="loading-step" id="step1">Analyzing market landscape</span>
+                    <span class="loading-step" id="step2">Identifying competitors</span>
+                    <span class="loading-step" id="step3">Finding monetization opportunities</span>
+                    <span class="loading-step" id="step4">Building content strategy</span>
+                    <span class="loading-step" id="step5">Compiling final report</span>
+                </div>
+            </div>
+
+            <!-- Error State -->
+            <div class="error-container" id="errorContainer">
+                <h3>⚠️ Something went wrong</h3>
+                <p id="errorMessage">Unable to generate report. Please try again.</p>
+                <button class="btn btn-primary" style="margin-top: 16px;" onclick="resetForm()">Try Again</button>
+            </div>
+
+            <!-- Report Output -->
+            <div class="report-container" id="reportContainer">
+                <div class="report-header">
+                    <div>
+                        <h2 id="reportTitle" style="margin:0; font-size:1.3rem;"></h2>
+                        <p class="report-meta" id="reportMeta"></p>
+                    </div>
+                    <div class="report-actions">
+                        <button class="btn btn-sm btn-outline" onclick="copyReport()">📋 Copy</button>
+                        <button class="btn btn-sm btn-outline" onclick="downloadReport()">⬇ Download</button>
+                        <button class="btn btn-sm btn-primary" onclick="resetForm()">+ New Report</button>
+                    </div>
+                </div>
+                <div class="report-content" id="reportContent">
+                    <!-- Report HTML injected here -->
+                </div>
+
+                <!-- Post-Report Email Capture -->
+                <div class="email-capture-box" id="postReportCapture">
+                    <h3>📬 Want weekly niche insights like this?</h3>
+                    <p style="color: var(--gray-400); font-size: 0.9rem; margin-bottom: 16px;">
+                        Get 3 fresh niche reports delivered to your inbox every week — free.
+                    </p>
+                    <form id="emailCaptureForm" style="display:inline-flex; gap:8px; flex-wrap:wrap; justify-content:center;">
+                        <input type="email" id="captureEmail" placeholder="Enter your email" required>
+                        <button type="submit" class="btn btn-primary btn-sm">Subscribe Free</button>
+                    </form>
+                    <p id="captureSuccess" style="display:none; color:#4CAF50; margin-top:12px;">✓ You're in! Check your inbox.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer (minimal for app page) -->
+    <footer class="footer" style="padding: 30px 0;">
+        <div class="container">
+            <div class="footer-bottom" style="border:none; padding:0;">
+                <p>© 2026 NicheReport.ai — <a href="index.html">Home</a> · <a href="index.html#faq">FAQ</a> · <a href="#">Affiliate Program</a></p>
+                <p class="affiliate-disclosure">
+                    <strong>Affiliate Disclosure:</strong> Some links in reports are affiliate links. 
+                    We may earn a commission at no extra cost to you.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
