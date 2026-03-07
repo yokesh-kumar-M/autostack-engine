@@ -3,7 +3,8 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'placeholder-key');
 
 async function generateReport(keyword) {
-    if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'placeholder-key') {
+    const apiKey = process.env.GEMINI_API_KEY || '';
+    if (!apiKey || apiKey === 'placeholder-key' || apiKey.includes('xxxxxxxx')) {
         // Fallback or demo mode when no real API key is present
         return `
             <h2>Market Overview</h2>
