@@ -1,15 +1,13 @@
-const Anthropic = require('@anthropic-ai/sdk');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const anthropic = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY || 'placeholder-key',
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'placeholder-key');
 
 async function generateReport(keyword) {
-    if (!process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY === 'placeholder-key') {
+    if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'placeholder-key') {
         // Fallback or demo mode when no real API key is present
         return `
             <h2>Market Overview</h2>
-            <p>This is a simulated NicheReport for <strong>${keyword}</strong>. To get the real AI generation, please input your exact Anthropic API Key in the backend <code>.env</code> file.</p>
+            <p>This is a simulated NicheReport for <strong>${keyword}</strong>. To get the real AI generation, please input your exact Gemini API Key in the backend <code>.env</code> file.</p>
             <p>The market for ${keyword} is growing but competition is fierce. Entering this niche requires high-quality differentiation.</p>
             <h2>Top 5 Competitors</h2>
             <ul>
@@ -35,7 +33,9 @@ async function generateReport(keyword) {
         `;
     }
 
-    const systemPrompt = `You are NicheReport AI, a highly specialized market research AI. Generate a comprehensive 1,200-word niche research report formatted in HTML for the given keyword.
+    const model = genAI.getGenerativeModel({
+        model: "gemini-1.5-flash",
+        systemInstruction: `You are NicheReport AI, a highly specialized market research AI. Generate a comprehensive 1,200-word niche research report formatted in HTML for the given keyword.
 The report MUST contain the following exact H2 headings:
 <h2>Market Overview</h2>
 <h2>Top 5 Competitors</h2>
@@ -50,18 +50,17 @@ IMPORTANT INSTRUCTION: Throughout the report, naturally weave in these EXACT pla
 [AFFILIATE:niche templates]
 [AFFILIATE:hosting service]
 
-Make the report highly valuable, insightful, actionable, and formatted beautifully with well-spaced paragraphs, lists, and bold text for emphasis. Do not wrap in markdown tags like \`\`\`html, just output valid HTML tags directly.`;
-
-    const msg = await anthropic.messages.create({
-        model: "claude-3-5-sonnet-20241022",
-        max_tokens: 2500,
-        system: systemPrompt,
-        messages: [
-            { role: "user", content: `Generate a highly valuable niche report for the keyword: "${keyword}"` }
-        ]
+Make the report highly valuable, insightful, actionable, and formatted beautifully with well-spaced paragraphs, lists, and bold text for emphasis. Do not wrap in markdown tags like \`\`\`html, just output valid HTML tags directly.`
     });
 
-    return msg.content[0].text;
+    const prompt = `Generate a highly valuable niche report for the keyword: "${keyword}"`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    let text = response.text();
+    // Remove markdown codeblock tags if they were added despite instructions
+    text = text.replace(/^```html\s*/i, '').replace(/\s*```$/i, '');
+    return text;
 }
 
 module.exports = { generateReport };

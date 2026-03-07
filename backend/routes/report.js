@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../services/supabase');
-const { generateReport } = require('../services/claude');
+const { generateReport } = require('../services/gemini');
 const { injectAffiliateLinks } = require('../services/affiliateMap');
 
 router.post('/', async (req, res) => {
@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
 
         console.log(`Generating report for: ${keyword}`);
 
-        // Generate report from Claude
+        // Generate report from AI
         const rawReport = await generateReport(keyword);
 
         // Process affiliate links (pass email + keyword for personalised Gumroad CTAs)

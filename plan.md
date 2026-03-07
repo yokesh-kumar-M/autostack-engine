@@ -33,7 +33,7 @@ Build a self-sustaining AI web product (**NicheReport.ai**) that:
 |----------|------|-----------|
 | Frontend | GitHub Pages | Unlimited |
 | App Hosting | Vercel | 100GB bandwidth/mo |
-| AI Engine | Anthropic API (claude-sonnet-4-20250514) | $5 free credits |
+| AI Engine | Google Gemini (gemini-1.5-flash) | Free tier |
 | Database | Supabase | 500MB, 50K requests |
 | Backend | Render.com | 750 hrs/mo free |
 | Payments | Gumroad | Free, 10% fee |
@@ -56,11 +56,11 @@ autostack-engine/
 ├── backend/                     # Render.com Node.js server
 │   ├── server.js                # Express API server
 │   ├── routes/
-│   │   ├── report.js            # POST /api/report → Claude API call
+│   │   ├── report.js            # POST /api/report → Gemini API call
 │   │   ├── leads.js             # POST /api/lead → Supabase insert
 │   │   └── affiliate.js         # GET /api/links → inject affiliate URLs
 │   ├── services/
-│   │   ├── claude.js            # Anthropic SDK wrapper
+│   │   ├── gemini.js            # Google Generative AI SDK wrapper
 │   │   ├── supabase.js          # DB client
 │   │   └── gumroad.js           # Upsell link builder
 │   └── .env                     # API keys (never commit this)
@@ -82,7 +82,7 @@ autostack-engine/
 ## 🔐 SECTION: ACCOUNTS & ENVIRONMENT VARIABLES
 
 ### Account Creation Checklist
-- [ ] **Anthropic (Claude API)** — console.anthropic.com → Get `ANTHROPIC_API_KEY`
+- [ ] **Google AI Studio (Gemini)** — aistudio.google.com → Get `GEMINI_API_KEY`
 - [x] **Supabase** — supabase.com → Get `SUPABASE_URL`, `SUPABASE_ANON_KEY`
 - [ ] **GitHub** — github.com → Create repo `autostack-engine` (public)
 - [ ] **Vercel** — vercel.com → Connect GitHub (no key needed)
@@ -106,7 +106,7 @@ autostack-engine/
 - NEVER hardcode API keys in source code
 - NEVER share `.env` in any public channel
 - DO use Render.com env vars for production secrets
-- DO rotate Anthropic API key if exposed
+- DO rotate Gemini API key if exposed
 
 ---
 
@@ -168,12 +168,12 @@ autostack-engine/
 
 ---
 
-### DAY 3 — Claude API Report Generator (Heart of the System)
+### DAY 3 — Gemini API Report Generator (Heart of the System)
 **Objective:** Backend endpoint that takes a keyword and returns a full AI report
 
 #### Backend Build Tasks
-- [x] Initialize Node.js project with dependencies: Express, Anthropic SDK, Supabase client, dotenv
-- [x] Create `backend/services/claude.js` — Anthropic SDK wrapper with `generateReport(keyword)` function
+- [x] Initialize Node.js project with dependencies: Express, Google Generative AI SDK, Supabase client, dotenv
+- [x] Create `backend/services/gemini.js` — SDK wrapper with `generateReport(keyword)` function
 - [x] System prompt: NicheReport AI → 1,200-word report with sections:
   - Market Overview
   - Top 5 Competitors
@@ -183,7 +183,7 @@ autostack-engine/
 - [x] Create `backend/services/supabase.js` — DB client
 - [x] Create `backend/routes/report.js` — POST `/api/report` endpoint
   - Accept `{keyword, email}` body
-  - Call Claude claude-sonnet-4-20250514
+  - Call Gemini gemini-1.5-flash
   - Post-process: replace `[AFFILIATE:X]` with real links
   - Save query to Supabase
   - Return `{report_html, word_count, affiliate_count}`
@@ -429,7 +429,7 @@ autostack-engine/
 
 | Problem | Solution |
 |---------|----------|
-| Claude API returns 429 (rate limit) | Add exponential backoff in claude.js; implement IP-based rate limiting |
+| Gemini API returns 429 (rate limit) | Implement IP-based rate limiting or adjust volume |
 | Reddit bot posts get removed | Increase value-to-CTA ratio; softer CTA |
 | Gumroad sales not triggering Zapier | Verify trigger is on 'Sale' event, not 'New Product' |
 | Supabase connection fails on Render | Check env vars in Render dashboard; enable connection pooling |
