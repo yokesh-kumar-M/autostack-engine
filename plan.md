@@ -256,17 +256,17 @@ autostack-engine/
 |------|----------------|--------|
 | Enter keyword on site | Report appears in <30s | - [ ] |
 | Click affiliate link in report | Redirects correctly | - [ ] |
-| Enter email in capture form | Email arrives in Mailchimp | - [ ] |
-| Click Gumroad upsell CTA | Gumroad checkout opens | - [ ] |
+| Enter email in capture form | Email arrives seamlessly via Native Mailer | - [x] |
+| Click Gumroad upsell CTA | Gumroad checkout opens | - [x] |
 | Complete test Gumroad purchase | Thank-you email fires | - [ ] |
-| Check Supabase tables | Rows logged for all actions | - [ ] |
+| Check Supabase tables | Rows logged for all actions | - [x] |
 
 #### Bug Fixes & Polish
-- [ ] Fix any failing tests from checklist above
-- [ ] Check Render logs for errors
-- [ ] Verify Claude API key and credit balance
-- [ ] Verify Zapier run history
-- [ ] Verify Supabase client in leads.js
+- [x] Fix any failing tests from checklist above
+- [x] Check Render logs for errors
+- [x] Verify Claude API key and credit balance
+- [x] Verify Native cron logs instead of Zapier
+- [x] Verify Supabase client in leads.js
 - [ ] Test on mobile devices
 - [ ] Test on multiple browsers
 
@@ -280,8 +280,8 @@ autostack-engine/
 **Objective:** Google discovers and indexes your site automatically
 
 #### SEO Tasks
-- [ ] Create `automation/seo-sitemap.js` — Generate `sitemap.xml` listing all pages
-- [ ] Upload sitemap.xml to GitHub Pages repo root
+- [x] Create `automation/seo-sitemap.js` — Generate `sitemap.xml` listing all pages
+- [x] Upload sitemap.xml to Vercel production
 - [ ] Submit sitemap in Google Search Console
 - [x] Add meta tags to `index.html`:
   - [x] Title tag (target: "free AI niche research tool")
@@ -290,7 +290,7 @@ autostack-engine/
   - [x] Canonical URL
   - [x] JSON-LD structured data (SoftwareApplication schema)
 - [x] Add meta tags to `app.html`
-- [ ] Target long-tail keywords:
+- [x] Target long-tail keywords:
   - "free niche research tool"
   - "AI niche finder"
   - "profitable niches 2026"
