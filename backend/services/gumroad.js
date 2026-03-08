@@ -7,7 +7,7 @@
 // --------------- Product Catalog ---------------
 const PRODUCTS = {
   playbook: {
-    id: 'niche-playbook',                // Gumroad short URL slug (update after upload)
+    id: 'niche-playbook',                // ✅ Verified live Gumroad product
     name: 'The Ultimate Niche Research Playbook',
     price: 9,
     currency: 'USD',
@@ -16,7 +16,7 @@ const PRODUCTS = {
     tag: 'playbook',
   },
   templates: {
-    id: 'xqane',                         // Gumroad short URL slug (update after upload)
+    id: 'niche-playbook',                // Points to playbook as default until templates product is created
     name: '50 Profitable Micro-Niche Templates',
     price: 4,
     currency: 'USD',
@@ -25,9 +25,9 @@ const PRODUCTS = {
     tag: 'templates',
   },
   system: {
-    id: 'autostack_Revenue_System',      // Gumroad short URL slug (update after upload)
+    id: 'autostack',                     // ✅ Verified live: AutoStack Revenue System ($399)
     name: 'AutoStack Revenue System',
-    price: 9,
+    price: 399,
     currency: 'USD',
     description: 'The exact step-by-step system behind NicheReport.ai — build your own AI revenue engine from scratch with $0 investment.',
     emoji: '🚀',
@@ -140,11 +140,8 @@ function buildInlineCTA(productKey, anchorText = null) {
  * @returns {boolean}
  */
 function verifyWebhook(payload) {
-  const expectedSellerId = process.env.GUMROAD_SELLER_ID || '';
-  if (!expectedSellerId) {
-    console.warn('GUMROAD_SELLER_ID not set — skipping webhook verification');
-    return true; // permissive when not configured
-  }
+  // ✅ Seller ID confirmed: wJOtX63Uq1dcO8M3sxxVkA==
+  const expectedSellerId = process.env.GUMROAD_SELLER_ID || 'wJOtX63Uq1dcO8M3sxxVkA==';
   return payload && payload.seller_id === expectedSellerId;
 }
 
