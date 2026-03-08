@@ -31,15 +31,15 @@ app.get('/health', (req, res) => {
 const PORT = process.env.PORT || 10000;
 
 app.listen(PORT, () => {
-    console.log("Server running on port " + PORT);
+    console.log(`✅ Server running on http://localhost:${PORT}`);
     
-    // Start automated background tasks
+    // Start Cron Jobs (Only when server is actually running)
     const { startEmailCron } = require('./automation/email-cron');
     const { startTwitterCron } = require('./automation/twitter-cron');
     const { startWeeklyDigestCron } = require('./automation/weekly-digest-cron');
-    const { startAutoAssetCron } = require('./automation/auto-asset-cron');
+    const { startAutoProductCron } = require('./automation/auto-product-cron');
     startEmailCron();
     startTwitterCron();
     startWeeklyDigestCron();
-    startAutoAssetCron();
+    startAutoProductCron();
 });
