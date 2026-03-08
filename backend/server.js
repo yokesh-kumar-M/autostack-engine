@@ -2,9 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
-const reportRoutes = require('./routes/report');
-const leadsRoutes = require('./routes/leads');
+const reportRoutes    = require('./routes/report');
+const leadsRoutes     = require('./routes/leads');
 const affiliateRoutes = require('./routes/affiliate');
+const gumroadRoutes   = require('./routes/gumroad');
 
 const app = express();
 
@@ -12,9 +13,10 @@ app.use(cors());
 app.use(express.json());
 
 // Load routes
-app.use('/api/report', reportRoutes);
-app.use('/api/lead', leadsRoutes);
+app.use('/api/report',    reportRoutes);
+app.use('/api/lead',      leadsRoutes);
 app.use('/api/affiliate', affiliateRoutes);
+app.use('/api/gumroad',   gumroadRoutes);  // Gumroad sale webhook
 
 const rssRoute = require('./routes/rss');
 app.use('/api', rssRoute);

@@ -3,6 +3,7 @@ const router = express.Router();
 const supabase = require('../services/supabase');
 const { generateReport } = require('../services/gemini');
 const { injectAffiliateLinks } = require('../services/affiliateMap');
+const emailService = require('../services/email');
 
 router.post('/', async (req, res) => {
     try {
@@ -27,6 +28,8 @@ router.post('/', async (req, res) => {
                 .gte('created_at', startOfDay);
 
             if (!error && count >= 3) {
+                // Notify owner — this is a high-intent user who burned all free reports
+                emailService.notifyRateLimitHit(ip_hash, keyword).catch(() => {});
                 return res.status(429).json({ error: "You have reached your daily limit of 3 free reports. Please come back tomorrow or upgrade!" });
             }
         }
@@ -58,6 +61,9 @@ router.post('/', async (req, res) => {
             word_count: wordCount,
             affiliate_count: affiliateCount
         });
+
+        // Notify owner of report generation (fire-and-forget after response sent)
+        emailService.notifyReportGenerated(keyword, wordCount, affiliateCount, !!email).catch(() => {});
 
     } catch (error) {
         console.error('Error generating report:', error);
