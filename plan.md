@@ -301,14 +301,14 @@ autostack-engine/
 **Objective:** Automated posts to niche subreddits 3x/week, zero manual work
 
 #### Bot Build Tasks
-- [ ] Create `automation/reddit-poster.js` using snoowrap + node-cron
-- [ ] Schedule: Monday, Wednesday, Friday at 9:00 AM UTC
-- [ ] Claude API generates unique 180-word helpful post (rotates topics)
+- [x] Create `automation/reddit-poster.js` using snoowrap + node-cron
+- [x] Schedule: Monday, Wednesday, Friday at 9:00 AM UTC
+- [x] Gemini API generates unique 180-word helpful post (rotates topics)
 - [ ] Store last 20 topics in Supabase to avoid repetition
-- [ ] Append soft CTA: "Visit nichereport.ai for free analysis"
-- [ ] Alternate posting between subreddits each run
-- [ ] Log removed posts to Supabase, skip to next subreddit
-- [ ] Deploy as cron job on Render.com
+- [x] Append soft CTA: "Visit nichereport.ai for free analysis"
+- [x] Alternate posting between subreddits each run
+- [x] Log removed posts to Supabase, skip to next subreddit
+- [x] Deploy as cron job on Render.com
 
 #### Target Subreddits
 | Subreddit | Members | Why |

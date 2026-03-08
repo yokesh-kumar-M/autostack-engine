@@ -24,9 +24,11 @@ app.get('/health', (req, res) => {
 const PORT = process.env.PORT || 10000;
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log("Server running on port " + PORT);
     
     // Start automated background tasks
     const { startEmailCron } = require('./automation/email-cron');
+    const { startRedditCron } = require('./automation/reddit-cron');
     startEmailCron();
+    startRedditCron();
 });
