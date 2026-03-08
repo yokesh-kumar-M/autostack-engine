@@ -297,32 +297,24 @@ autostack-engine/
 
 ---
 
-### DAY 9 — Reddit Auto-Poster Bot
-**Objective:** Automated posts to niche subreddits 3x/week, zero manual work
+### DAY 9 — Twitter (X) Auto-Poster Bot
+**Objective:** Automated viral posts to Twitter 3x/week, zero manual work
+
+*Note: Pivoted from Reddit to Twitter due to Reddit's new stringent API lockdown policies.*
 
 #### Bot Build Tasks
-- [x] Create `automation/reddit-poster.js` using snoowrap + node-cron
+- [x] Create `automation/twitter-poster.js` using twitter-api-v2 + node-cron
 - [x] Schedule: Monday, Wednesday, Friday at 9:00 AM UTC
-- [x] Gemini API generates unique 180-word helpful post (rotates topics)
-- [ ] Store last 20 topics in Supabase to avoid repetition
-- [x] Append soft CTA: "Visit nichereport.ai for free analysis"
-- [x] Alternate posting between subreddits each run
-- [x] Log removed posts to Supabase, skip to next subreddit
+- [x] Gemini API generates unique 280-character viral tweets (rotates topics)
+- [x] Store last 20 topics in Supabase to avoid repetition
+- [x] Append soft CTA: "Run a free AI report at nichereport.ai" + #SideHustle
 - [x] Deploy as cron job on Render.com
 
-#### Target Subreddits
-| Subreddit | Members | Why |
-|-----------|---------|-----|
-| r/entrepreneur | 1.2M | Exact target audience |
-| r/sidehustle | 890K | People looking for passive income |
-| r/juststart | 240K | Beginners who need your tool |
-| r/affiliatemarketing | 180K | Will click affiliate links |
-| r/passive_income | 750K | Perfect niche overlap |
-| r/blogging | 320K | Content creators need niche tools |
-
-- [ ] Create Reddit app credentials
-- [ ] Test bot locally before deploying
-- [ ] Verify first automated post goes live
+#### Twitter Setup Tasks
+- [x] Create Twitter Developer Account (Free Tier)
+- [x] Generate API Keys (API Key, API Secret, Access Token, Access Secret)
+- [x] Test bot locally before deploying
+- [x] Verify first automated tweet goes live
 
 ---
 

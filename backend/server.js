@@ -28,7 +28,7 @@ app.listen(PORT, () => {
     
     // Start automated background tasks
     const { startEmailCron } = require('./automation/email-cron');
-    const { startRedditCron } = require('./automation/reddit-cron');
+    const { startTwitterCron } = require('./automation/twitter-cron');
     startEmailCron();
-    startRedditCron();
+    startTwitterCron();
 });
