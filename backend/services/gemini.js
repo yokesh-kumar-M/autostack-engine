@@ -35,11 +35,15 @@ async function generateReport(keyword) {
         return getDemoReport(keyword);
     }
 
-    try {
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
-            systemInstruction: `You are NicheReport AI, a highly specialized market research AI. Generate a comprehensive 1,200-word niche research report formatted in HTML for the given keyword.
+    const MAX_RETRIES = 3;
+    const BASE_DELAY_MS = 20000; // 20 seconds — free tier rate limits need this
+
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const model = genAI.getGenerativeModel({
+                model: "gemini-1.5-flash-latest",
+                systemInstruction: `You are NicheReport AI, a highly specialized market research AI. Generate a comprehensive 1,200-word niche research report formatted in HTML for the given keyword.
 The report MUST contain the following exact H2 headings:
 <h2>Market Overview</h2>
 <h2>Top 5 Competitors</h2>
@@ -55,20 +59,39 @@ IMPORTANT INSTRUCTION: Throughout the report, naturally weave in these EXACT pla
 [AFFILIATE:hosting service]
 
 Make the report highly valuable, insightful, actionable, and formatted beautifully with well-spaced paragraphs, lists, and bold text for emphasis. Do not wrap in markdown tags like \`\`\`html, just output valid HTML tags directly.`
-        });
+            });
 
-        const prompt = `Generate a highly valuable niche report for the keyword: "${keyword}"`;
+            const prompt = `Generate a highly valuable niche report for the keyword: "${keyword}"`;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        let text = response.text();
-        // Remove markdown codeblock tags if they were added despite instructions
-        text = text.replace(/^```html\s*/i, '').replace(/\s*```$/i, '');
-        return text;
-    } catch (e) {
-        console.error("Gemini API Error (Fallback to Demo Mode):", e.message);
-        return getDemoReport(keyword);
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            let text = response.text();
+            // Remove markdown codeblock tags if they were added despite instructions
+            text = text.replace(/^```html\s*/i, '').replace(/\s*```$/i, '');
+            console.log(`Gemini report generated successfully for "${keyword}" (attempt ${attempt})`);
+            return text;
+        } catch (e) {
+            const isRateLimit = e.message && (
+                e.message.includes('429') ||
+                e.message.includes('quota') ||
+                e.message.includes('Quota') ||
+                e.message.includes('retry') ||
+                e.message.includes('Resource has been exhausted')
+            );
+
+            if (isRateLimit && attempt < MAX_RETRIES) {
+                const delay = BASE_DELAY_MS * attempt;
+                console.log(`Gemini rate limited (attempt ${attempt}/${MAX_RETRIES}). Retrying in ${delay / 1000}s...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                continue;
+            }
+
+            console.error(`Gemini API Error (attempt ${attempt}/${MAX_RETRIES}, Fallback to Demo):`, e.message);
+            return getDemoReport(keyword);
+        }
     }
+
+    return getDemoReport(keyword);
 }
 
 module.exports = { generateReport };
