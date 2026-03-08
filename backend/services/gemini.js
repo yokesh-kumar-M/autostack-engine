@@ -103,26 +103,26 @@ async function generateProductGuide(keyword) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash",
-        systemInstruction: `You are a world-class digital product creator and market analyst. You write definitive, highly-detailed, book-length strategy guides. 
-CRITICAL RULES:
-- Write strictly like a cynical, experienced industry veteran, not a friendly AI.
-- NEVER use cliché AI transitions like "In conclusion", "Moreover", "Furthermore", "Delve into", "Navigating the landscape", "A multifaceted approach", or "It's important to note".
-- Use aggressive, factual, data-driven language. Short, punchy sentences. Real-world (or highly plausible simulated) examples. Zero fluff.
-- Content must pass all AI detectors as human written. Write with personality, slight contrarianism, and rigorous detail.
-- Present exact step-by-step technical blueprints, not general advice.
-Make sure the writing is formatted beautifully with markdown.`
+        systemInstruction: `You are an elite, cynical, underground digital entrepreneur writing a controversial 'tell-all' book. 
+CRITICAL ANTI-AI RULES:
+- DO NOT sound like a helpful assistant, a textbook, or a motivational speaker. DO NOT ask conversational rhetorical questions (e.g. "Ready to cultivate your own passive income?").
+- DO NOT use the words: "Actionable Framework", "Conclusion", "Moreover", "Furthermore", "Delve into", "Navigating the landscape", "A multifaceted approach", "It's important to note", "In summary".
+- AVOID generic listicles (e.g., "1. Identify Your Niche", "2. Outcome"). AI uses these as crutches. Write in continuous, hard-hitting, narrative paragraphs instead.
+- If you use bullet points, limit them to raw data, specific metrics, or exact software stacks. No generic advice.
+- Content must pass all AI detectors as 100% human-written. Plagiarism-free. 
+- Tone: Aggressive, deeply factual, slightly contrarian, insider-knowledge, zero-fluff. Read like a premium $500 consulting document.`
     });
 
     let fullMarkdown = `# The Ultimate Blueprint: ${keyword}\n\n`;
 
     const chapters = [
-        `Chapter 1: The Opportunity Landscape of ${keyword}`,
-        `Chapter 2: Identifying Your 1,000 True Fans in ${keyword}`,
-        `Chapter 3: High-Profit Monetization Models`,
-        `Chapter 4: The 30-Day Launch Roadmap`,
-        `Chapter 5: Content Creation & Viral Traffic Strategies`,
-        `Chapter 6: Advanced Scaling Secrets`,
-        `Chapter 7: The Exit Strategy: Selling Your Asset`
+        `Chapter 1: The Raw Truth About ${keyword}`,
+        `Chapter 2: Building An Audience That Actually Buys`,
+        `Chapter 3: The Monetization Math (No Fluff)`,
+        `Chapter 4: The 30-Day Execution Timeline`,
+        `Chapter 5: Traffic Arbitrage & Content Systems`,
+        `Chapter 6: Defending Your Moat & Scaling Operations`,
+        `Chapter 7: Asset Valuation & The Exit`
     ];
 
     try {
@@ -130,11 +130,13 @@ Make sure the writing is formatted beautifully with markdown.`
         for (let i = 0; i < chapters.length; i++) {
             const chapTitle = chapters[i];
             console.log(`Writing ${chapTitle}...`);
-            const prompt = `Write a deep, authoritative, 1,500-word chapter for a book about "${keyword}". 
+            const prompt = `Write a brutal, highly-detailed 1,500-word chapter for an elite business book about "${keyword}". 
 The chapter is titled: "${chapTitle}".
-Make it dense with facts, case study-like examples, step-by-step actionable metrics, and professional formatting. 
-Use Markdown properly with ## headings for sub-sections. Use bullet points and bolding for readability.
-DO NOT output the literal title of the chapter at the very beginning, just start writing the introductory paragraph and sub-sections directly.`;
+CRITICAL: Do NOT write an intro that says "In this chapter, we will..." Just start dropping heavy, insider knowledge immediately.
+CRITICAL: Do NOT format this as a standard AI listicle (e.g. "1. Step One", "2. Step Two"). Write highly readable, narrative paragraphs filled with exact numbers, deep psychological triggers, real or highly plausible case studies, and contrarian takes. 
+CRITICAL: Do NOT ask the reader questions. Tell them exactly how it works.
+FORMAT: Use markdown headers (###) for distinct sub-topics. Limit bold text to emphasizing critical metrics, not every single sentence.
+DO NOT output the literal title of the chapter at the very beginning, just start the prose directly.`;
 
             let retries = 3;
             let success = false;
