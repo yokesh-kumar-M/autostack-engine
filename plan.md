@@ -233,22 +233,18 @@ autostack-engine/
 
 ---
 
-### DAY 6 — Zapier Email Automation
-**Objective:** Automated email nurture sequence for every lead captured
+### DAY 6 — Fully Native Node.js Zero-Cost Email Automation
+**Objective:** Automated email nurture sequence for every lead captured without touching paid limits
 
-#### Zapier Workflows (5 Zaps — free tier max)
-- [x] **Native Integration** New row in Supabase (email) → Add to Mailchimp audience natively via Node backend
-- [x] **Native Integration** Mailchimp automated journey (triggers 3 day follow-up)
-- [x] **Native Integration** Mailchimp automated journey (triggers 7 day follow-up)
-- [ ] **Zap 4:** Gumroad sale → Thank you email + delivery of bonus PDF
-- [ ] **Zap 5:** Weekly analytics summary email to yourself (revenue, clicks, conversions)
+#### Automation Workflows
+- [x] **Native Integration:** New row in Supabase (email) → Triggers GMai Welcome Email via nodemailer
+- [x] **Native Integration:** Node-Cron Background Job (triggers 3 day follow-up via Gmail API)
+- [x] **Native Integration:** Node-Cron Background Job (triggers 7 day follow-up via Gmail API)
 
 #### Email Setup
-- [x] Create Mailchimp account and audience list
-- [x] Design welcome email template
-- [x] Design follow-up email templates (Day 3, Day 7)
-- [x] Design thank-you email template
-- [ ] Test all 5 Zaps end-to-end
+- [x] Bypass Mailchimp completely to ensure 100% free overhead forever.
+- [x] Integrate HTML templates securely directly into Node.js memory.
+- [x] Setup Google App Passwords for server-to-inbox rendering.
 
 ---
 
