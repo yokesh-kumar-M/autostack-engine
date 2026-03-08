@@ -42,7 +42,7 @@ async function generateReport(keyword) {
         try {
             const genAI = new GoogleGenerativeAI(apiKey);
             const model = genAI.getGenerativeModel({
-                model: "gemini-1.5-flash",
+                model: "gemini-2.5-flash",
                 systemInstruction: `You are NicheReport AI, a highly specialized market research AI. Generate a comprehensive 1,200-word niche research report formatted in HTML for the given keyword.
 The report MUST contain the following exact H2 headings:
 <h2>Market Overview</h2>
@@ -100,30 +100,67 @@ async function generateProductGuide(keyword) {
         return `# The Simulated Blueprint for ${keyword}\nThis is a sample playbook content for your automated Gumroad product.`;
     }
 
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-flash",
+        systemInstruction: `You are a world-class digital product creator and market analyst. You write definitive, highly-detailed, book-length strategy guides. 
+CRITICAL RULES:
+- Write strictly like a cynical, experienced industry veteran, not a friendly AI.
+- NEVER use cliché AI transitions like "In conclusion", "Moreover", "Furthermore", "Delve into", "Navigating the landscape", "A multifaceted approach", or "It's important to note".
+- Use aggressive, factual, data-driven language. Short, punchy sentences. Real-world (or highly plausible simulated) examples. Zero fluff.
+- Content must pass all AI detectors as human written. Write with personality, slight contrarianism, and rigorous detail.
+- Present exact step-by-step technical blueprints, not general advice.
+Make sure the writing is formatted beautifully with markdown.`
+    });
+
+    let fullMarkdown = `# The Ultimate Blueprint: ${keyword}\n\n`;
+
+    const chapters = [
+        `Chapter 1: The Opportunity Landscape of ${keyword}`,
+        `Chapter 2: Identifying Your 1,000 True Fans in ${keyword}`,
+        `Chapter 3: High-Profit Monetization Models`,
+        `Chapter 4: The 30-Day Launch Roadmap`,
+        `Chapter 5: Content Creation & Viral Traffic Strategies`,
+        `Chapter 6: Advanced Scaling Secrets`,
+        `Chapter 7: The Exit Strategy: Selling Your Asset`
+    ];
+
     try {
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
-            systemInstruction: `You are a world-class digital product creator and market analyst. 
-Your task is to write a comprehensive, 2,000-word "Niche Blueprint" guide for a specific keyword.
-The guide should be written in Markdown and designed to be a high-value paid PDF ($20-$50 value).
+        console.log(`Starting multi-chapter generation of ~25 page book for "${keyword}"...`);
+        for (let i = 0; i < chapters.length; i++) {
+            const chapTitle = chapters[i];
+            console.log(`Writing ${chapTitle}...`);
+            const prompt = `Write a deep, authoritative, 1,500-word chapter for a book about "${keyword}". 
+The chapter is titled: "${chapTitle}".
+Make it dense with facts, case study-like examples, step-by-step actionable metrics, and professional formatting. 
+Use Markdown properly with ## headings for sub-sections. Use bullet points and bolding for readability.
+DO NOT output the literal title of the chapter at the very beginning, just start writing the introductory paragraph and sub-sections directly.`;
 
-Structure it like a professional book:
-# Title: The Ultimate Strategy Blueprint for ${keyword}
-## Chapter 1: The Opportunity Landscape
-## Chapter 2: Identifying Your 1,000 True Fans
-## Chapter 3: High-Profit Monetization Models
-## Chapter 4: The 30-Day Launch Roadmap
-## Chapter 5: Advanced Scaling Secrets
-## Chapter 6: The Exit Strategy: Selling Your Asset
-
-Make it dense with facts, case study-like examples, and actionable steps. Use bolding, lists, and clear hierarchy.`
-        });
-
-        const prompt = `Write a deep, authoritative 2,000-word Niche Strategy Blueprint for the keyword: "${keyword}"`;
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        return response.text();
+            let retries = 3;
+            let success = false;
+            while (retries > 0 && !success) {
+                try {
+                    const result = await model.generateContent(prompt);
+                    const response = await result.response;
+                    const text = response.text();
+                    
+                    fullMarkdown += `## ${chapTitle}\n\n${text}\n\n---\n\n`;
+                    success = true;
+                    // Mindful delay to avoid hitting the 15 RPM free tier limit
+                    await new Promise(r => setTimeout(r, 12000)); 
+                } catch (e) {
+                    retries--;
+                    if (retries === 0) {
+                        console.error(`Failed to generate ${chapTitle}:`, e.message);
+                        fullMarkdown += `## ${chapTitle}\n\n[Section skipped due to API limits or errors: ${e.message}]\n\n---\n\n`;
+                    } else {
+                        console.log(`Rate limited on ${chapTitle}. Retrying in 20s...`);
+                        await new Promise(r => setTimeout(r, 20000));
+                    }
+                }
+            }
+        }
+        return fullMarkdown;
     } catch (e) {
         console.error("Gemini Guide Generation Error:", e.message);
         return `# The Blueprint for ${keyword}\nFailed to generate full guide. Error: ${e.message}`;

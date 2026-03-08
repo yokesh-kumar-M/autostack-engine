@@ -37,7 +37,9 @@ app.listen(PORT, () => {
     const { startEmailCron } = require('./automation/email-cron');
     const { startTwitterCron } = require('./automation/twitter-cron');
     const { startWeeklyDigestCron } = require('./automation/weekly-digest-cron');
+    const { startAutoAssetCron } = require('./automation/auto-asset-cron');
     startEmailCron();
     startTwitterCron();
     startWeeklyDigestCron();
+    startAutoAssetCron();
 });
