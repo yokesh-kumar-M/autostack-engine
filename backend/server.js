@@ -16,6 +16,9 @@ app.use('/api/report', reportRoutes);
 app.use('/api/lead', leadsRoutes);
 app.use('/api/affiliate', affiliateRoutes);
 
+const rssRoute = require('./routes/rss');
+app.use('/api', rssRoute);
+
 // Healthcheck endpoint
 app.get('/health', (req, res) => {
     res.json({ status: 'ok' });
@@ -29,6 +32,8 @@ app.listen(PORT, () => {
     // Start automated background tasks
     const { startEmailCron } = require('./automation/email-cron');
     const { startTwitterCron } = require('./automation/twitter-cron');
+    const { startWeeklyDigestCron } = require('./automation/weekly-digest-cron');
     startEmailCron();
     startTwitterCron();
+    startWeeklyDigestCron();
 });
