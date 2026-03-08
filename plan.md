@@ -129,10 +129,10 @@ autostack-engine/
 - [x] Embed Google Analytics 4 tracking code placeholder
 
 #### Deployment
-- [ ] Create GitHub repo `autostack-engine` (public)
-- [ ] Enable GitHub Pages (Settings → Pages → Source: main branch / root)
-- [ ] Push landing page: `git add . && git commit -m 'init' && git push`
-- [ ] Verify live URL: `https://yourusername.github.io/autostack-engine`
+- [x] Create GitHub repo `autostack-engine` (public)
+- [x] Create Vercel project connected to GitHub repository
+- [x] Set project root directory to `frontend`
+- [x] Verify live URL: `https://niche-report-ai.vercel.app`
 
 ---
 
@@ -228,8 +228,8 @@ autostack-engine/
 - [x] Set all environment variables in Render dashboard
 - [x] Deploy and get public URL (e.g., `myapp.onrender.com`)
 - [x] Update `frontend/app.js` — Set `API_BASE` to Render URL
-- [ ] Test API endpoint from browser/Postman
-- [ ] Set up UptimeRobot.com (free) to ping app every 5 min (prevent sleep)
+- [x] Test API endpoint from browser/Postman
+- [x] Set up UptimeRobot.com (free) to ping app every 5 min (prevent sleep)
 
 ---
 
@@ -237,17 +237,17 @@ autostack-engine/
 **Objective:** Automated email nurture sequence for every lead captured
 
 #### Zapier Workflows (5 Zaps — free tier max)
-- [ ] **Zap 1:** New row in Supabase (email) → Add to Mailchimp audience → Send welcome email
-- [ ] **Zap 2:** Welcome email → Day 3 follow-up: "Your free report is ready" + Gumroad upsell
-- [ ] **Zap 3:** Day 7 follow-up: "5 niches we found for you this week" + affiliate links
+- [x] **Native Integration** New row in Supabase (email) → Add to Mailchimp audience natively via Node backend
+- [x] **Native Integration** Mailchimp automated journey (triggers 3 day follow-up)
+- [x] **Native Integration** Mailchimp automated journey (triggers 7 day follow-up)
 - [ ] **Zap 4:** Gumroad sale → Thank you email + delivery of bonus PDF
 - [ ] **Zap 5:** Weekly analytics summary email to yourself (revenue, clicks, conversions)
 
 #### Email Setup
-- [ ] Create Mailchimp account and audience list
-- [ ] Design welcome email template
-- [ ] Design follow-up email templates (Day 3, Day 7)
-- [ ] Design thank-you email template
+- [x] Create Mailchimp account and audience list
+- [x] Design welcome email template
+- [x] Design follow-up email templates (Day 3, Day 7)
+- [x] Design thank-you email template
 - [ ] Test all 5 Zaps end-to-end
 
 ---
