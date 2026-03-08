@@ -25,4 +25,8 @@ const PORT = process.env.PORT || 10000;
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    
+    // Start automated background tasks
+    const { startEmailCron } = require('./automation/email-cron');
+    startEmailCron();
 });

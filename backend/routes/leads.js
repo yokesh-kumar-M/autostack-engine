@@ -30,40 +30,16 @@ router.post('/', async (req, res) => {
             const { error } = await supabase.from('conversions').insert([{
                 type: 'email_capture',
                 keyword: body.keyword || 'unknown',
-                source: body.source || 'capture_form',
+                source: body.email,  // Storing email in source to avoid schema changes
                 revenue: 0
             }]);
 
-            // Add to Mailchimp directly to skip Zapier limits
+            // Send native welcome email immediately using Gmail
             try {
-                if (process.env.MAILCHIMP_API_KEY && process.env.MAILCHIMP_LIST_ID) {
-                    const dc = process.env.MAILCHIMP_API_KEY.split('-')[1];
-                    const url = `https://${dc}.api.mailchimp.com/3.0/lists/${process.env.MAILCHIMP_LIST_ID}/members`;
-                    
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            email_address: body.email,
-                            status: 'subscribed'
-                        }),
-                        headers: {
-                            'Authorization': `ApiKey ${process.env.MAILCHIMP_API_KEY}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        console.log(`Mailchimp: Successfully subscribed ${body.email}`);
-                    } else {
-                        // Suppress error log if they are just already subscribed
-                        const result = await response.json();
-                        if (result.title !== "Member Exists") {
-                            console.error(`Mailchimp error for ${body.email}:`, result);
-                        }
-                    }
-                }
+                const emailService = require('../services/email');
+                await emailService.sendWelcomeEmail(body.email);
             } catch (err) {
-                console.error("Mailchimp integration failed:", err);
+                console.error("Native Gmail welcome email failed:", err);
             }
 
             if (error) throw error;
