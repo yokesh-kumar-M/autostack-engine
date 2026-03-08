@@ -4,7 +4,7 @@
 // ===== Configuration =====
 const CONFIG = {
     // Update this to your Render.com URL after deployment
-    API_BASE: 'https://autostack-niche-api.onrender.com',
+    API_BASE: 'https://autostack-api-production.onrender.com',
     MAX_FREE_REPORTS: 3,
     LOADING_STEP_DELAYS: [2000, 5000, 9000, 14000, 18000], // ms delays for loading steps
 };
