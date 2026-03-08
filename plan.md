@@ -386,8 +386,23 @@ autostack-engine/
 - [x] All API keys in `.env` + Render env vars — NOT hardcoded in code
 - [x] Exit-intent popup live → captures bouncing visitors as email leads
 - [x] Google Search Console verified + sitemap indexed
+- [x] Automated Owner Command Center (IST Notifications) verified
 
 ---
+
+### DAY 15 — AI Content-to-Gumroad Engine (Infinite Assets)
+**Objective:** Scale your income by generating new digital products on-demand with zero manual writing.
+
+#### Automation Tasks
+- [x] Create `backend/services/pdfService.js` — Branded, professional PDF generator from Markdown.
+- [x] Create `backend/services/gumroadAutomation.js` — Automated listing/draft creator for new products.
+- [x] Create `backend/services/productAutomation.js` — Orchestrator (Gemini → PDF → Gumroad).
+- [x] Create `backend/routes/admin.js` — Secure trigger endpoint (`/api/admin/create-product`).
+- [x] Integrated "Niche Blueprint" prompts for 2,000-word authoritative guides.
+- [ ] Implement "Direct Upload" via Browser Subagent to bypass API limitations.
+
+---
+
 
 ## 💰 REVENUE MODEL & PROJECTIONS
 

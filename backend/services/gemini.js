@@ -42,7 +42,7 @@ async function generateReport(keyword) {
         try {
             const genAI = new GoogleGenerativeAI(apiKey);
             const model = genAI.getGenerativeModel({
-                model: "gemini-1.5-flash-latest",
+                model: "gemini-1.5-flash",
                 systemInstruction: `You are NicheReport AI, a highly specialized market research AI. Generate a comprehensive 1,200-word niche research report formatted in HTML for the given keyword.
 The report MUST contain the following exact H2 headings:
 <h2>Market Overview</h2>
@@ -94,4 +94,40 @@ Make the report highly valuable, insightful, actionable, and formatted beautiful
     return getDemoReport(keyword);
 }
 
-module.exports = { generateReport };
+async function generateProductGuide(keyword) {
+    const apiKey = process.env.GEMINI_API_KEY || '';
+    if (!apiKey || apiKey === 'placeholder-key' || apiKey.includes('xxxxxxxx')) {
+        return `# The Simulated Blueprint for ${keyword}\nThis is a sample playbook content for your automated Gumroad product.`;
+    }
+
+    try {
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({
+            model: "gemini-1.5-flash",
+            systemInstruction: `You are a world-class digital product creator and market analyst. 
+Your task is to write a comprehensive, 2,000-word "Niche Blueprint" guide for a specific keyword.
+The guide should be written in Markdown and designed to be a high-value paid PDF ($20-$50 value).
+
+Structure it like a professional book:
+# Title: The Ultimate Strategy Blueprint for ${keyword}
+## Chapter 1: The Opportunity Landscape
+## Chapter 2: Identifying Your 1,000 True Fans
+## Chapter 3: High-Profit Monetization Models
+## Chapter 4: The 30-Day Launch Roadmap
+## Chapter 5: Advanced Scaling Secrets
+## Chapter 6: The Exit Strategy: Selling Your Asset
+
+Make it dense with facts, case study-like examples, and actionable steps. Use bolding, lists, and clear hierarchy.`
+        });
+
+        const prompt = `Write a deep, authoritative 2,000-word Niche Strategy Blueprint for the keyword: "${keyword}"`;
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        return response.text();
+    } catch (e) {
+        console.error("Gemini Guide Generation Error:", e.message);
+        return `# The Blueprint for ${keyword}\nFailed to generate full guide. Error: ${e.message}`;
+    }
+}
+
+module.exports = { generateReport, generateProductGuide };

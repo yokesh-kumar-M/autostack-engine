@@ -6,6 +6,7 @@ const reportRoutes    = require('./routes/report');
 const leadsRoutes     = require('./routes/leads');
 const affiliateRoutes = require('./routes/affiliate');
 const gumroadRoutes   = require('./routes/gumroad');
+const adminRoutes     = require('./routes/admin');
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use('/api/report',    reportRoutes);
 app.use('/api/lead',      leadsRoutes);
 app.use('/api/affiliate', affiliateRoutes);
 app.use('/api/gumroad',   gumroadRoutes);  // Gumroad sale webhook
+app.use('/api/admin',     adminRoutes);    // Admin automation triggers
 
 const rssRoute = require('./routes/rss');
 app.use('/api', rssRoute);

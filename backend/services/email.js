@@ -181,6 +181,15 @@ const notifyRateLimitHit      = (ip, keyword)                => send(notify.rate
 const notifyGumroadSale       = (product, price, buyer)      => send(notify.gumroadSale(product, price, buyer));
 const notifyAffiliateClick    = (keyword, url)               => send(notify.affiliateClick(keyword, url));
 
+const sendGenericEmail = (to, subject, html) => {
+    return send({
+        from: '"NicheReport AI" <' + OWNER_EMAIL + '>',
+        to: to,
+        subject: subject,
+        html: html
+    });
+};
+
 module.exports = {
     sendWelcomeEmail,
     sendDay3Email,
@@ -189,5 +198,6 @@ module.exports = {
     notifyReportGenerated,
     notifyRateLimitHit,
     notifyGumroadSale,
-    notifyAffiliateClick
+    notifyAffiliateClick,
+    sendGenericEmail
 };
