@@ -14,12 +14,12 @@
     <meta property="og:description" content="AI-powered niche research in 30 seconds. Try it free.">
 
     <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FMPHXGKEZ1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', 'GA_MEASUREMENT_ID');
+        gtag('config', 'G-FMPHXGKEZ1', { send_page_view: true });
     </script>
 
     <link rel="stylesheet" href="styles.css">
@@ -145,5 +145,29 @@
     </footer>
 
     <script src="app.js"></script>
+    <script>
+        // ===== GA4: Track affiliate link clicks in reports =====
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href*="gumroad.com"]');
+            if (link && typeof gtag === 'function') {
+                gtag('event', 'affiliate_click', {
+                    link_url: link.href,
+                    link_text: link.innerText.trim().substring(0, 100)
+                });
+            }
+        });
+
+        // ===== GA4: Track Gumroad checkout opens as conversions =====
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href*="yokeshkumar.gumroad.com"]');
+            if (link && typeof gtag === 'function') {
+                gtag('event', 'begin_checkout', {
+                    currency: 'USD',
+                    value: 9.00,
+                    items: [{ item_name: link.innerText.trim().substring(0, 80) }]
+                });
+            }
+        });
+    </script>
 </body>
 </html>

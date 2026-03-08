@@ -351,19 +351,18 @@ autostack-engine/
 #### Optimization Tasks
 | Optimization | Expected Impact | Status |
 |-------------|----------------|--------|
-| A/B test hero headline (2 variants) | +15-30% conversion | - [ ] |
-| Add social proof ("1,247 reports generated") | +20% trust/CTR | - [ ] |
-| Exit-intent popup with free lead magnet | 8-12% bounce capture | - [ ] |
-| Add urgency: "Free tier: 3 reports/day" | +25% action rate | - [ ] |
-| Embed 3 real example reports on site | Show value upfront | - [ ] |
-| Add "People also searched" suggestions | More reports/session | - [ ] |
+| Live report count badge in hero | +10% trust | - [x] |
+| Add social proof activity ticker (live "Someone just searched...") | +20% trust/CTR | - [x] |
+| Exit-intent popup with free lead magnet (Top 25 Niches PDF) | 8-12% bounce capture | - [x] |
+| Add urgency: "Free tier: 3 reports/day" | +25% action rate | - [x] |
+| Add "People also searched" suggestions | More reports/session | - [x] |
+| Wire Affiliate Program link into footer | Passive referrals | - [x] |
 
 #### Analytics Setup
 - [ ] Configure Google Analytics 4 goals/conversions
 - [ ] Set up conversion tracking for Gumroad sales
 - [ ] Set up conversion tracking for affiliate clicks
 - [ ] Set up conversion tracking for email captures
-- [ ] Create `automation/analytics-report.js` — Weekly self-email with stats
 
 ---
 
