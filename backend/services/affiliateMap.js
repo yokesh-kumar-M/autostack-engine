@@ -1,5 +1,5 @@
 const { buildUpsellLink, buildInlineCTA, buildReportUpsellBlock } = require('./gumroad');
-
+const axios = require('axios');
 // ──────────────────────────────────────────────
 // Affiliate Link Mapping
 // Placeholders emitted by Claude are replaced
@@ -19,6 +19,64 @@ const AFFILIATE_MAP = {
 
   '[AFFILIATE:hosting service]': `<a href="${process.env.AFFILIATE_LINK_HOST || 'https://render.com'}" target="_blank" rel="noopener nofollow" class="affiliate-link" data-product="hosting">🌐 Web Hosting Provider</a>`,
 };
+
+const GUMROAD_ACCESS_TOKEN = process.env.GUMROAD_ACCESS_TOKEN;
+const GUMROAD_API_URL = 'https://api.gumroad.com/v2';
+
+/**
+ * Creates a new Gumroad product programmatically.
+ */
+async function createProduct(name, price, description) {
+    try {
+        const response = await axios.post(`${GUMROAD_API_URL}/products`, {
+            access_token: GUMROAD_ACCESS_TOKEN,
+            name: name,
+            price: price, // in cents (e.g., 1000 = $10.00)
+            description: description,
+            url: `https://nichereport.ai/resources/${name.replace(/\s+/g, '-').toLowerCase()}`
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error creating Gumroad product:", error.response?.data || error.message);
+        throw error;
+    }
+}
+
+/**
+ * Fetch all Gumroad products for this user.
+ */
+async function getProducts() {
+    try {
+        const response = await axios.get(`${GUMROAD_API_URL}/products`, {
+            params: { access_token: GUMROAD_ACCESS_TOKEN }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching Gumroad products:", error.response?.data || error.message);
+        throw error;
+    }
+}
+
+/**
+ * Generates an affiliate link for a specific product and user email.
+ * Note: Gumroad requires the affiliate to have an account, or we can use generic tracking links.
+ */
+async function generateAffiliateLink(productId, email) {
+    try {
+        // Gumroad API v2 /affiliates endpoint allows you to add an affiliate to a product
+        const response = await axios.post(`${GUMROAD_API_URL}/affiliates`, {
+            access_token: GUMROAD_ACCESS_TOKEN,
+            email: email,
+            amount: 50, // 50% commission
+            product_id: productId
+        });
+        
+        return response.data;
+    } catch (error) {
+        console.error("Error generating Gumroad affiliate link:", error.response?.data || error.message);
+        throw error;
+    }
+}
 
 /**
  * Replace all [AFFILIATE:xxx] placeholders in the report HTML and
@@ -47,4 +105,10 @@ function injectAffiliateLinks(htmlContent, email = null, keyword = null) {
   return { html: modifiedHtml, count: affiliateCount };
 }
 
-module.exports = { injectAffiliateLinks, AFFILIATE_MAP };
+module.exports = {
+    injectAffiliateLinks,
+    AFFILIATE_MAP,
+    createProduct,
+    getProducts,
+    generateAffiliateLink
+};
