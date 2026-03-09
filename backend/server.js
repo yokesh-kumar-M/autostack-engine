@@ -38,8 +38,21 @@ app.listen(PORT, () => {
     const { startTwitterCron } = require('./automation/twitter-cron');
     const { startWeeklyDigestCron } = require('./automation/weekly-digest-cron');
     const { startAutoProductCron } = require('./automation/auto-product-cron');
+    
     startEmailCron();
     startTwitterCron();
     startWeeklyDigestCron();
     startAutoProductCron();
+
+    // ── KEEP-ALIVE PING (Prevent Render Free Tier Sleep) ──
+    const http = require('http');
+    const selfUrl = `http://localhost:${PORT}/health`;
+    
+    setInterval(() => {
+        http.get(selfUrl, (res) => {
+            // Keep-alive successful
+        }).on('error', (err) => {
+            console.error('Keep-alive ping failed:', err.message);
+        });
+    }, 10 * 60 * 1000); // Every 10 minutes
 });

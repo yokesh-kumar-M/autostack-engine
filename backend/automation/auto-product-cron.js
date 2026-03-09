@@ -51,15 +51,16 @@ function startAutoProductCron() {
 
                         <h2>Next Steps (1 Minute task)</h2>
                         <ol style="color: #E2E8F0;">
+                            <li>Download the attached PDF to your computer.</li>
                             <li>Go to your <a href="${result.gumroad_url}" style="color: #F4A81D;">Gumroad Dashboard</a>.</li>
                             <li>Create a New Product named "The Ultimate ${topic} Blueprint".</li>
-                            <li>Set the price to $19.00.</li>
-                            <li>Upload the PDF located at the path above.</li>
+                            <li>Upload the PDF and set the price to $19.00.</li>
                         </ol>
                         
                         <p>Another asset will be generated automatically in 48 hours.</p>
                     </div>
-                    `
+                    `,
+                    [{ filename: result.fileName, path: result.pdf_path }]
                 );
             }
 

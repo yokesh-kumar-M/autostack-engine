@@ -181,12 +181,13 @@ const notifyRateLimitHit      = (ip, keyword)                => send(notify.rate
 const notifyGumroadSale       = (product, price, buyer)      => send(notify.gumroadSale(product, price, buyer));
 const notifyAffiliateClick    = (keyword, url)               => send(notify.affiliateClick(keyword, url));
 
-const sendGenericEmail = (to, subject, html) => {
+const sendGenericEmail = (to, subject, html, attachments = []) => {
     return send({
         from: '"NicheReport AI" <' + OWNER_EMAIL + '>',
         to: to,
         subject: subject,
-        html: html
+        html: html,
+        attachments: attachments
     });
 };
 
