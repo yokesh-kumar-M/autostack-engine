@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const cron = require('node-cron');
-const BASE_URL = 'https://nichereport.ai';
+const BASE_URL = 'https://niche-report-ai.vercel.app';
 const SITEMAP_PATH = path.join(__dirname, '../../frontend/sitemap.xml');
 
 const pages = [

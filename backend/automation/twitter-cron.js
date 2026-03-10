@@ -48,9 +48,9 @@ const runTwitterPost = async () => {
                 const postData = JSON.parse(responseText);
 
                 if (tweetType === 'height') {
-                    finalTweet = postData.tweet + '\n\nFree growth analysis → nichereport.ai #HeightGrowth #Biohacking';
+                    finalTweet = postData.tweet + '\n\nFree growth analysis → niche-report-ai.vercel.app #HeightGrowth #Biohacking';
                 } else {
-                    finalTweet = postData.tweet + '\n\nFree AI niche report → nichereport.ai #NicheResearch #SideHustle';
+                    finalTweet = postData.tweet + '\n\nFree AI niche report → niche-report-ai.vercel.app #NicheResearch #SideHustle';
                 }
             } catch (gemErr) {
                 console.error('Gemini error in Twitter bot:', gemErr.message);
@@ -61,14 +61,14 @@ const runTwitterPost = async () => {
         if (!finalTweet) {
             const fallbacks = {
                 height: [
-                    "L-arginine + L-glutamine taken before sleep can spike HGH by up to 700%. Most people sleep wrong.\n\nFree growth analysis → nichereport.ai #HeightGrowth #Biohacking",
-                    "Your intervertebral discs can expand with proper decompression. That's hidden height you're leaving on the table.\n\nFree analysis → nichereport.ai #Biohacking",
-                    "Deep sleep in complete darkness boosts HGH by 157%. Your phone's blue light is literally suppressing your growth.\n\nFree growth report → nichereport.ai #HGH"
+                    "L-arginine + L-glutamine taken before sleep can spike HGH by up to 700%. Most people sleep wrong.\n\nFree growth analysis → niche-report-ai.vercel.app #HeightGrowth #Biohacking",
+                    "Your intervertebral discs can expand with proper decompression. That's hidden height you're leaving on the table.\n\nFree analysis → niche-report-ai.vercel.app #Biohacking",
+                    "Deep sleep in complete darkness boosts HGH by 157%. Your phone's blue light is literally suppressing your growth.\n\nFree growth report → niche-report-ai.vercel.app #HGH"
                 ],
                 niche: [
-                    "The best niches aren't 'trending.' They're boring problems rich people pay to solve.\n\nFree AI niche report → nichereport.ai #Entrepreneurship",
-                    "Stop competing in saturated markets. Find the weird, specific niche nobody is serving yet.\n\nFree AI analysis → nichereport.ai #SideHustle",
-                    "80% of successful online businesses start with niche research. 90% of failing ones skip it.\n\nFree report → nichereport.ai #NicheResearch"
+                    "The best niches aren't 'trending.' They're boring problems rich people pay to solve.\n\nFree AI niche report → niche-report-ai.vercel.app #Entrepreneurship",
+                    "Stop competing in saturated markets. Find the weird, specific niche nobody is serving yet.\n\nFree AI analysis → niche-report-ai.vercel.app #SideHustle",
+                    "80% of successful online businesses start with niche research. 90% of failing ones skip it.\n\nFree report → niche-report-ai.vercel.app #NicheResearch"
                 ]
             };
             const options = fallbacks[tweetType];

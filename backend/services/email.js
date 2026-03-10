@@ -36,7 +36,7 @@ const heightTemplates = {
             <a href="${HGH_URL}" style="color:#F4A81D;font-weight:bold;">Unlock HGH Protocol →</a></p>
             <p>To your growth,<br/>Yokesh, Founder of NicheReport.ai</p>
             <hr style="margin-top:40px;border:none;border-top:1px solid #eee;"/>
-            <p style="font-size:12px;color:#777;">Sent because you requested an analysis at nichereport.ai. Reply STOP to unsubscribe.</p>
+            <p style="font-size:12px;color:#777;">Sent because you requested an analysis at niche-report-ai.vercel.app. Reply STOP to unsubscribe.</p>
         </div>`
     }),
     day3: (email) => ({
@@ -55,7 +55,7 @@ const heightTemplates = {
             <p><a href="${BAMBOO_METHOD_URL}" style="color:#F4A81D;font-weight:bold;">🎋 Get The Bamboo Method (₹1,599) →</a></p>
             <p>To your success,<br/>Yokesh</p>
             <hr style="margin-top:40px;border:none;border-top:1px solid #eee;"/>
-            <p style="font-size:12px;color:#777;">Sent because you requested a report at nichereport.ai. Reply STOP to unsubscribe.</p>
+            <p style="font-size:12px;color:#777;">Sent because you requested a report at niche-report-ai.vercel.app. Reply STOP to unsubscribe.</p>
         </div>`
     }),
     day7: (email) => ({
@@ -71,7 +71,7 @@ const heightTemplates = {
             <a href="${GUMBI_MODE_URL}" style="color:#F4A81D;font-weight:bold;">Gumbi Mode (₹2,199) →</a></p>
             <p>Transform your biology today.<br/>Yokesh</p>
             <hr style="margin-top:40px;border:none;border-top:1px solid #eee;"/>
-            <p style="font-size:12px;color:#777;">Sent because you requested a report at nichereport.ai. Reply STOP to unsubscribe.</p>
+            <p style="font-size:12px;color:#777;">Sent because you requested a report at niche-report-ai.vercel.app. Reply STOP to unsubscribe.</p>
         </div>`
     })
 };
@@ -93,7 +93,7 @@ const nicheTemplates = {
             <a href="${PLAYBOOK_URL}" style="color:#F4A81D;font-weight:bold;">Get The Playbook →</a></p>
             <p>To your success,<br/>Yokesh, Founder of NicheReport.ai</p>
             <hr style="margin-top:40px;border:none;border-top:1px solid #eee;"/>
-            <p style="font-size:12px;color:#777;">Sent because you requested a report at nichereport.ai. Reply STOP to unsubscribe.</p>
+            <p style="font-size:12px;color:#777;">Sent because you requested a report at niche-report-ai.vercel.app. Reply STOP to unsubscribe.</p>
         </div>`
     }),
     day3: (email) => ({
@@ -110,7 +110,7 @@ const nicheTemplates = {
             <p><a href="${AUTOSTACK_URL}" style="color:#F4A81D;font-weight:bold;">🚀 AutoStack Revenue System (₹399+) →</a></p>
             <p>Best,<br/>Yokesh</p>
             <hr style="margin-top:40px;border:none;border-top:1px solid #eee;"/>
-            <p style="font-size:12px;color:#777;">Sent because you requested a report at nichereport.ai. Reply STOP to unsubscribe.</p>
+            <p style="font-size:12px;color:#777;">Sent because you requested a report at niche-report-ai.vercel.app. Reply STOP to unsubscribe.</p>
         </div>`
     }),
     day7: (email) => ({
@@ -129,7 +129,7 @@ const nicheTemplates = {
             <a href="${AUTOSTACK_URL}" style="color:#F4A81D;font-weight:bold;">Get The System (₹399+) →</a></p>
             <p>Take action today.<br/>Yokesh</p>
             <hr style="margin-top:40px;border:none;border-top:1px solid #eee;"/>
-            <p style="font-size:12px;color:#777;">Sent because you requested a report at nichereport.ai. Reply STOP to unsubscribe.</p>
+            <p style="font-size:12px;color:#777;">Sent because you requested a report at niche-report-ai.vercel.app. Reply STOP to unsubscribe.</p>
         </div>`
     })
 };

@@ -34,7 +34,7 @@ router.get('/feed.xml', async (req, res) => {
 '<rss version="2.0">\n' +
 '<channel>\n' +
 '  <title>NicheReport.ai — Trending AI Niches</title>\n' +
-'  <link>https://nichereport.ai/</link>\n' +
+'  <link>https://niche-report-ai.vercel.app/</link>\n' +
 '  <description>Automated live feed of the most profitable emerging niches discovered by our AI researchers today.</description>\n';
 
         for (const item of uniqueItems) {
@@ -42,7 +42,7 @@ router.get('/feed.xml', async (req, res) => {
             xml += '\n' +
 '  <item>\n' +
 '    <title>Trending Niche: ' + item.keyword + '</title>\n' +
-'    <link>https://nichereport.ai/app.html?keyword=' + encodedKeyword + '</link>\n' +
+'    <link>https://niche-report-ai.vercel.app/app.html?keyword=' + encodedKeyword + '</link>\n' +
 '    <description>Our AI has just compiled a comprehensive market analysis, competitor breakdown, and monetization strategy for \\\'' + item.keyword + '\\\'. Check out the full breakdown for free.</description>\n' +
 '    <pubDate>' + new Date(item.created_at).toUTCString() + '</pubDate>\n' +
 '  </item>';

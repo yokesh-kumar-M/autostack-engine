@@ -86,8 +86,8 @@ async function generateReport(keyword) {
     const MAX_RETRIES = 3;
     const BASE_DELAY_MS = 15000;
 
-    // Try multiple models in order of preference
-    const MODELS_TO_TRY = ['gemini-2.0-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+    // Try multiple models in order of preference (newest first — they have fresh quotas)
+    const MODELS_TO_TRY = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash-lite', 'gemini-2.0-flash'];
 
     for (const modelName of MODELS_TO_TRY) {
         for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
@@ -142,6 +142,15 @@ Make the report highly valuable, insightful, actionable, and formatted beautiful
                 const response = await result.response;
                 let text = response.text();
                 text = text.replace(/^```html\s*/i, '').replace(/\s*```$/i, '');
+                // Strip any <html>, <head>, <body>, <style>, <meta>, <!DOCTYPE> tags the AI might add
+                text = text.replace(/<!DOCTYPE[^>]*>/gi, '');
+                text = text.replace(/<\/?html[^>]*>/gi, '');
+                text = text.replace(/<head[\s\S]*?<\/head>/gi, '');
+                text = text.replace(/<\/?body[^>]*>/gi, '');
+                text = text.replace(/<style[\s\S]*?<\/style>/gi, '');
+                text = text.replace(/<meta[^>]*>/gi, '');
+                text = text.replace(/<title[\s\S]*?<\/title>/gi, '');
+                text = text.trim();
                 console.log(`Gemini report generated for "${keyword}" using ${modelName} (attempt ${attempt})`);
                 return text;
             } catch (e) {
@@ -181,7 +190,7 @@ async function generateProductGuide(keyword) {
         return `# The Simulated Blueprint for ${keyword}\nThis is a sample playbook content for your automated Gumroad product.`;
     }
 
-    const MODELS_TO_TRY = ['gemini-2.0-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+    const MODELS_TO_TRY = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash-lite', 'gemini-2.0-flash'];
 
     for (const modelName of MODELS_TO_TRY) {
         try {
