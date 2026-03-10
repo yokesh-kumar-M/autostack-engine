@@ -3,6 +3,18 @@ const router = express.Router();
 const { automateProductCreation } = require('../services/productAutomation');
 const emailService = require('../services/email');
 
+// Simple admin protective middleware
+const adminAuth = (req, res, next) => {
+    const password = req.headers['x-admin-password'];
+    if (password === process.env.ADMIN_PASSWORD) {
+        next();
+    } else {
+        res.status(401).json({ error: 'Unauthorized: Invalid admin password' });
+    }
+};
+
+router.use(adminAuth);
+
 // Trigger product automation (AI Content -> PDF -> Gumroad Listing)
 router.post('/create-product', async (req, res) => {
     const { keyword, price } = req.body;
@@ -62,6 +74,17 @@ router.post('/trigger-emails', async (req, res) => {
     try {
         const { runEmailAutomation } = require('../automation/email-cron');
         const result = await runEmailAutomation();
+        res.json({ success: true, result });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Manual trigger for Weekly Analytics Digest
+router.post('/trigger-digest', async (req, res) => {
+    try {
+        const { runWeeklyDigest } = require('../automation/weekly-digest-cron');
+        const result = await runWeeklyDigest();
         res.json({ success: true, result });
     } catch (error) {
         res.status(500).json({ error: error.message });

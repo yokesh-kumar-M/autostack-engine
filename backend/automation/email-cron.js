@@ -12,7 +12,7 @@ const runEmailAutomation = async () => {
 
     try {
         // ============================================
-        // 1. Send Day 3 Follow Up (Upsell Templates)
+        // 1. Send Day 3 Follow Up
         // ============================================
         const threeDaysAgoStart = new Date();
         threeDaysAgoStart.setDate(threeDaysAgoStart.getDate() - 3);
@@ -23,23 +23,26 @@ const runEmailAutomation = async () => {
 
         const { data: day3Users, error: err3 } = await supabase
             .from('conversions')
-            .select('keyword, source')
+            .select('keyword, source, url')
             .eq('type', 'email_capture')
             .gte('created_at', threeDaysAgoStart.toISOString())
             .lte('created_at', threeDaysAgoEnd.toISOString());
 
         if (err3) throw err3;
-
         console.log("Found " + day3Users.length + " users for Day 3 emails.");
+
+        const day3SentEmails = new Set();
         for (const user of day3Users) {
-             const email = user.source; 
-             if(email && email.includes('@')) {
-                 await emailService.sendDay3Email(email);
-             }
+            const email = user.source;
+            if (email && email.includes('@') && !day3SentEmails.has(email)) {
+                const isHeight = user.url === 'height';
+                await emailService.sendDay3Email(email, isHeight);
+                day3SentEmails.add(email);
+            }
         }
 
         // ============================================
-        // 2. Send Day 7 Follow Up (Tech Stack Affiliate)
+        // 2. Send Day 7 Follow Up
         // ============================================
         const sevenDaysAgoStart = new Date();
         sevenDaysAgoStart.setDate(sevenDaysAgoStart.getDate() - 7);
@@ -50,22 +53,25 @@ const runEmailAutomation = async () => {
 
         const { data: day7Users, error: err7 } = await supabase
             .from('conversions')
-            .select('keyword, source')
+            .select('keyword, source, url')
             .eq('type', 'email_capture')
             .gte('created_at', sevenDaysAgoStart.toISOString())
             .lte('created_at', sevenDaysAgoEnd.toISOString());
 
         if (err7) throw err7;
-
         console.log("Found " + day7Users.length + " users for Day 7 emails.");
+
+        const day7SentEmails = new Set();
         for (const user of day7Users) {
-             const email = user.source;
-             if(email && email.includes('@')) {
-                 await emailService.sendDay7Email(email);
-             }
+            const email = user.source;
+            if (email && email.includes('@') && !day7SentEmails.has(email)) {
+                const isHeight = user.url === 'height';
+                await emailService.sendDay7Email(email, isHeight);
+                day7SentEmails.add(email);
+            }
         }
-        
-        return { day3Sent: day3Users.length, day7Sent: day7Users.length };
+
+        return { day3Sent: day3SentEmails.size, day7Sent: day7SentEmails.size };
 
     } catch (error) {
         console.error("Automation Error:", error);
@@ -74,7 +80,6 @@ const runEmailAutomation = async () => {
 };
 
 const startEmailCron = () => {
-    // Run exactly at 10:00 AM UTC every single day.
     console.log("Email Cron Job Registered (runs at 10:00 UTC daily).");
     cron.schedule('0 10 * * *', runEmailAutomation);
 };

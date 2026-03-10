@@ -38,21 +38,26 @@ app.listen(PORT, () => {
     const { startTwitterCron } = require('./automation/twitter-cron');
     const { startWeeklyDigestCron } = require('./automation/weekly-digest-cron');
     const { startAutoProductCron } = require('./automation/auto-product-cron');
+    const { startCleanupCron } = require('./automation/cleanup-cron');
+    const { startSitemapCron } = require('./automation/seo-sitemap');
     
     startEmailCron();
     startTwitterCron();
     startWeeklyDigestCron();
     startAutoProductCron();
+    startCleanupCron();
+    startSitemapCron();
 
     // ── KEEP-ALIVE PING (Prevent Render Free Tier Sleep) ──
-    const http = require('http');
-    const selfUrl = `http://localhost:${PORT}/health`;
+    const https = require('https');
+    const publicUrl = process.env.RENDER_EXTERNAL_URL ? `${process.env.RENDER_EXTERNAL_URL}/health` : `https://autostack-api-production.onrender.com/health`;
     
+    // Ping every 14 minutes (Render sleeps after 15 mins of inactivity)
     setInterval(() => {
-        http.get(selfUrl, (res) => {
-            // Keep-alive successful
+        https.get(publicUrl, (res) => {
+            console.log(`Keep-alive ping sent to ${publicUrl}: ${res.statusCode}`);
         }).on('error', (err) => {
             console.error('Keep-alive ping failed:', err.message);
         });
-    }, 10 * 60 * 1000); // Every 10 minutes
+    }, 14 * 60 * 1000); 
 });

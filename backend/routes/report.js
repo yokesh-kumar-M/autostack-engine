@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../services/supabase');
-const { generateReport } = require('../services/gemini');
+const { generateReport, isHeightRelated } = require('../services/gemini');
 const { injectAffiliateLinks } = require('../services/affiliateMap');
 const emailService = require('../services/email');
 
@@ -16,9 +16,7 @@ router.post('/', async (req, res) => {
 
         // --- Rate Limiting via Supabase ---
         if (supabase) {
-            const today = new Date().toISOString().split('T')[0]; // simple YYYY-MM-DD
-
-            // Note: Since Supabase created_at is TIMESTAMPTZ, to match today we can do >= start of day
+            const today = new Date().toISOString().split('T')[0];
             const startOfDay = new Date(today).toISOString();
 
             const { count, error } = await supabase
@@ -28,26 +26,27 @@ router.post('/', async (req, res) => {
                 .gte('created_at', startOfDay);
 
             if (!error && count >= 3) {
-                // Notify owner — this is a high-intent user who burned all free reports
                 emailService.notifyRateLimitHit(ip_hash, keyword).catch(() => {});
                 return res.status(429).json({ error: "You have reached your daily limit of 3 free reports. Please come back tomorrow or upgrade!" });
             }
         }
-        // -----------------------------------
 
         console.log(`Generating report for: ${keyword}`);
+
+        // Detect intent
+        const isHeight = isHeightRelated(keyword);
 
         // Generate report from AI
         const rawReport = await generateReport(keyword);
 
-        // Process affiliate links (pass email + keyword for personalised Gumroad CTAs)
+        // Process affiliate links (context-aware)
         const { html: processedHtml, count: affiliateCount } = injectAffiliateLinks(rawReport, email || null, keyword);
 
-        // Approximate word count by stripping HTML
+        // Word count
         const textOnly = processedHtml.replace(/<[^>]*>?/gm, '');
         const wordCount = textOnly.trim().split(/\s+/).length;
 
-        // Log asynchronously to Supabase (if configured)
+        // Log to Supabase
         if (supabase) {
             supabase.from('queries').insert([
                 { keyword, email: email || null, ip_hash }
@@ -62,8 +61,15 @@ router.post('/', async (req, res) => {
             affiliate_count: affiliateCount
         });
 
-        // Notify owner of report generation (fire-and-forget after response sent)
+        // Owner notification (fire-and-forget)
         emailService.notifyReportGenerated(keyword, wordCount, affiliateCount, !!email).catch(() => {});
+
+        // Send report PDF to user if email provided
+        if (email && email.includes('@')) {
+            emailService.sendReportEmail(email, keyword, processedHtml).catch(err => 
+                console.error('Failed to email report:', err.message)
+            );
+        }
 
     } catch (error) {
         console.error('Error generating report:', error);

@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const supabase = require('../services/supabase');
 const emailService = require('../services/email');
+const { isHeightRelated } = require('../services/gemini');
 
 router.post('/', async (req, res) => {
     try {
         const body = req.body;
 
         if (!supabase) {
-            console.warn('Got lead/click but Supabase is not configured yet.');
+            console.warn('Got lead/click but Supabase is not configured.');
             return res.json({ success: true, warning: 'Supabase unconfigured' });
         }
 
@@ -22,28 +23,30 @@ router.post('/', async (req, res) => {
             }]);
             if (error) throw error;
 
-            // Notify owner (fire-and-forget)
             emailService.notifyAffiliateClick(body.keyword, body.url).catch(() => {});
-
             return res.json({ success: true });
         }
 
         // ── Email Lead Capture ───────────────────────────────────────
         if (body.email) {
+            const keyword = body.keyword || 'unknown';
+            const isHeight = isHeightRelated(keyword);
+
             const { error } = await supabase.from('conversions').insert([{
                 type: 'email_capture',
-                keyword: body.keyword || 'unknown',
-                source: body.email,  // email stored in source column
-                revenue: 0
+                keyword: keyword,
+                source: body.email,
+                revenue: 0,
+                // Store the keyword category for contextual drip emails
+                url: isHeight ? 'height' : 'niche'
             }]);
             if (error) throw error;
 
-            // Send welcome email to customer
-            emailService.sendWelcomeEmail(body.email).catch(err =>
+            // Send contextual welcome email
+            emailService.sendWelcomeEmail(body.email, isHeight).catch(err =>
                 console.error('Welcome email failed:', err.message));
 
-            // Notify owner of new lead (fire-and-forget)
-            emailService.notifyNewLead(body.email, body.keyword, body.source || 'report_form')
+            emailService.notifyNewLead(body.email, keyword, body.source || 'report_form')
                 .catch(() => {});
 
             return res.json({ success: true });

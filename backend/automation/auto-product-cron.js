@@ -4,18 +4,15 @@ const { sendGenericEmail } = require('../services/email');
 
 // The ultimate library of high-value niche topics to automatically cycle through
 const NICHE_TOPICS = [
-    "SaaS for Local Businesses",
-    "Micro-SaaS for Event Planners",
-    "Automated Newsletter Businesses",
-    "AI Agents for Real Estate",
-    "High-Ticket B2B Lead Generation",
-    "Faceless TikTok E-commerce",
-    "No-Code App Development Agencies",
-    "Print on Demand in 2026",
-    "Ghostwriting for B2B Founders",
-    "Programmatic SEO Content Farms",
-    "Digital Product Empires for Notion",
-    "The Solopreneur Holding Company Model"
+    "Height Growth Biohacking for Adults",
+    "Natural Growth Hormone Optimization",
+    "Bone Density & Micro-fracture Training",
+    "Postural Realignment for Height Maximization",
+    "Biological Stature Engineering",
+    "Hyperspecific Nutrition for Bone Growth",
+    "The Science of Epiphyseal Closure Delay",
+    "Limb Lengthening Alternatives & Protocols",
+    "Peak Human Physical Potential Mastery"
 ];
 
 let currentTopicIndex = 0;

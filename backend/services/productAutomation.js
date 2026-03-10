@@ -1,6 +1,5 @@
 const { generateProductGuide } = require('./gemini');
 const { createNichePDF } = require('./pdfService');
-const { createGumroadProduct } = require('./gumroadAutomation');
 const fs = require('fs');
 const path = require('path');
 

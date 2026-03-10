@@ -1,13 +1,19 @@
 const cron = require('node-cron');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const { TwitterApi } = require('twitter-api-v2');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+
+// Alternate between height growth tips (drives product sales) and niche research tips (drives tool traffic)
+const TWEET_TYPES = ['height', 'niche', 'height', 'height', 'niche'];
+let tweetTypeIndex = 0;
 
 const runTwitterPost = async () => {
     console.log('EXEC: Starting Twitter Auto-Poster...', new Date().toISOString());
 
     try {
-        if (!process.env.TWITTER_API_KEY || process.env.TWITTER_API_KEY.includes('xxx')) {
-            console.warn('Twitter API credentials not configured. Skipping tweet.');
+        if (!process.env.TWITTER_API_KEY || process.env.TWITTER_API_KEY === 'your_twitter_api_key') {
+            console.warn('Twitter API credentials not configured.');
             return { skipped: true, reason: 'unconfigured' };
         }
 
@@ -18,45 +24,61 @@ const runTwitterPost = async () => {
             accessSecret: process.env.TWITTER_ACCESS_SECRET,
         });
 
-        // Generate tweet content via Gemini
-        const apiKey = process.env.GEMINI_API_KEY || '';
-        if (!apiKey || apiKey === 'placeholder-key' || apiKey.includes('xxxxxxxx')) {
-             console.warn('Gemini API key not configured for Twitter bot.');
-             return { skipped: true, reason: 'gemini_unconfigured' };
-        }
-
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
-        const prompt = 'Act as a successful entrepreneur sharing valuable niche business insights on Twitter.\n' +
-            'Format your response as a JSON object with a single field: "tweet".\n' +
-            'Pick a random, weird, hyper-specific emerging digital niche (e.g. AI-powered pet loss counseling, etc).\n' +
-            'The tweet field should be under 200 characters, read like genuine advice (not clickbait), and include one line break.\n' +
-            'No hashtags in the text itself.\n';
+        const tweetType = TWEET_TYPES[tweetTypeIndex % TWEET_TYPES.length];
+        tweetTypeIndex++;
 
         let finalTweet = "";
-        try {
-            const result = await model.generateContent(prompt);
-            const responseText = result.response.text()
-                .replace(/```json/g, '')
-                .replace(/```/g, '')
-                .trim();
+        const apiKey = process.env.GEMINI_API_KEY || '';
 
-            const postData = JSON.parse(responseText);
-            const cta = '\n\nRun a free AI report at nichereport.ai #SideHustle';
-            finalTweet = postData.tweet + cta;
-        } catch (gemErr) {
-            console.error('Gemini error in Twitter bot:', gemErr.message);
-            // Fallback content to ensure bot still fires
-            finalTweet = "Finding a micro-niche is 80% of the game. Don't build for everyone; build for the weird, specific group nobody is serving yet.\n\nRun a free AI report at nichereport.ai #SideHustle";
+        if (apiKey && apiKey !== 'placeholder-key') {
+            try {
+                const genAI = new GoogleGenerativeAI(apiKey);
+                const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
+
+                let prompt;
+                if (tweetType === 'height') {
+                    prompt = `Write a single tweet (under 220 chars) sharing a specific, scientific insight about natural height growth or HGH optimization. Include one surprising stat or fact. No hashtags. Format as JSON: {"tweet":"..."}`;
+                } else {
+                    prompt = `Write a single tweet (under 220 chars) sharing a sharp insight about finding profitable micro-niches online. Be contrarian and specific. No hashtags. Format as JSON: {"tweet":"..."}`;
+                }
+
+                const result = await model.generateContent(prompt);
+                const responseText = result.response.text()
+                    .replace(/```json/g, '').replace(/```/g, '').trim();
+                const postData = JSON.parse(responseText);
+
+                if (tweetType === 'height') {
+                    finalTweet = postData.tweet + '\n\nFree growth analysis → nichereport.ai #HeightGrowth #Biohacking';
+                } else {
+                    finalTweet = postData.tweet + '\n\nFree AI niche report → nichereport.ai #NicheResearch #SideHustle';
+                }
+            } catch (gemErr) {
+                console.error('Gemini error in Twitter bot:', gemErr.message);
+            }
         }
 
-        // Post the tweet
-        console.log('Tweeting: ' + finalTweet.substring(0, 80) + '...');
+        // Fallback tweets
+        if (!finalTweet) {
+            const fallbacks = {
+                height: [
+                    "L-arginine + L-glutamine taken before sleep can spike HGH by up to 700%. Most people sleep wrong.\n\nFree growth analysis → nichereport.ai #HeightGrowth #Biohacking",
+                    "Your intervertebral discs can expand with proper decompression. That's hidden height you're leaving on the table.\n\nFree analysis → nichereport.ai #Biohacking",
+                    "Deep sleep in complete darkness boosts HGH by 157%. Your phone's blue light is literally suppressing your growth.\n\nFree growth report → nichereport.ai #HGH"
+                ],
+                niche: [
+                    "The best niches aren't 'trending.' They're boring problems rich people pay to solve.\n\nFree AI niche report → nichereport.ai #Entrepreneurship",
+                    "Stop competing in saturated markets. Find the weird, specific niche nobody is serving yet.\n\nFree AI analysis → nichereport.ai #SideHustle",
+                    "80% of successful online businesses start with niche research. 90% of failing ones skip it.\n\nFree report → nichereport.ai #NicheResearch"
+                ]
+            };
+            const options = fallbacks[tweetType];
+            finalTweet = options[Math.floor(Math.random() * options.length)];
+        }
 
+        console.log('Tweeting: ' + finalTweet.substring(0, 80) + '...');
         const tweet = await twitterClient.readWrite.v2.tweet(finalTweet);
-        console.log('Successfully tweeted! Tweet ID: ' + tweet.data.id);
-        return { success: true, tweetId: tweet.data.id };
+        console.log('Successfully tweeted! ID: ' + tweet.data.id);
+        return { success: true, tweetId: tweet.data.id, type: tweetType };
 
     } catch (error) {
         console.error('Twitter Post Error:', error.message || error);
@@ -65,9 +87,9 @@ const runTwitterPost = async () => {
 };
 
 const startTwitterCron = () => {
-    // Run Monday, Wednesday, Friday at 9:00 AM UTC
-    console.log('Twitter Cron Job Registered (runs Mon, Wed, Fri at 09:00 UTC).');
-    cron.schedule('0 9 * * 1,3,5', runTwitterPost);
+    // Run Mon, Wed, Fri, Sat at 10:00 AM UTC (3:30 PM IST — peak engagement)
+    console.log('Twitter Cron Job Registered (Mon/Wed/Fri/Sat at 10:00 UTC).');
+    cron.schedule('0 10 * * 1,3,5,6', runTwitterPost);
 };
 
 module.exports = { startTwitterCron, runTwitterPost };

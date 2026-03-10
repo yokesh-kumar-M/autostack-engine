@@ -37,19 +37,45 @@ async function createNichePDF(keyword, content, outputPath) {
         lines.forEach(line => {
             if (line.startsWith('# ')) {
                 doc.addPage();
-                doc.fillColor('#F4A81D').fontSize(22).text(line.replace('# ', ''), { align: 'left' });
-                doc.moveDown();
+                doc.fillColor('#F4A81D').fontSize(24).font('Helvetica-Bold').text(line.replace('# ', ''), { align: 'left' });
+                doc.font('Helvetica').moveDown();
             } else if (line.startsWith('## ')) {
                 addSectionHeader(line.replace('## ', ''));
+            } else if (line.startsWith('### ')) {
+                doc.moveDown(0.5);
+                doc.fillColor('#1B2A40').fontSize(14).font('Helvetica-Bold').text(line.replace('### ', ''));
+                doc.font('Helvetica').moveDown(0.2);
             } else if (line.trim() === '---') {
                 doc.moveDown();
-                doc.strokeColor('#eee').moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+                doc.strokeColor('#eee').lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
                 doc.moveDown();
-            } else if (line.trim()) {
-                doc.fillColor('#444').fontSize(12).text(line.trim(), {
-                    align: 'justify',
+            } else if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
+                const bulletText = line.trim().substring(2);
+                doc.fillColor('#444').fontSize(12).font('Helvetica').text('• ' + bulletText, {
+                    indent: 20,
                     lineGap: 2
                 });
+            } else if (line.trim()) {
+                // Basic Bold support within a line: **text**
+                const text = line.trim();
+                if (text.includes('**')) {
+                    const parts = text.split('**');
+                    doc.fillColor('#444').fontSize(12).font('Helvetica');
+                    
+                    parts.forEach((part, i) => {
+                        if (i % 2 === 1) {
+                            doc.font('Helvetica-Bold').text(part, { continued: i < parts.length - 1 });
+                        } else {
+                            doc.font('Helvetica').text(part, { continued: i < parts.length - 1 });
+                        }
+                    });
+                    doc.text(''); // end line
+                } else {
+                    doc.fillColor('#444').fontSize(12).font('Helvetica').text(text, {
+                        align: 'justify',
+                        lineGap: 2
+                    });
+                }
             } else {
                 doc.moveDown(0.5);
             }
