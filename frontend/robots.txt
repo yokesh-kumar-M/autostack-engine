@@ -1,7 +1,11 @@
 User-agent: *
 Allow: /
+
 Sitemap: https://niche-report-ai.vercel.app/sitemap.xml
 
+# Allow all crawlers to index all pages
 User-agent: Googlebot
 Allow: /
-Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /

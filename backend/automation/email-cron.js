@@ -12,7 +12,39 @@ const runEmailAutomation = async () => {
 
     try {
         // ============================================
-        // 1. Send Day 3 Follow Up
+        // 1. Send Day 1 Follow Up (next day after signup)
+        // ============================================
+        const oneDayAgoStart = new Date();
+        oneDayAgoStart.setDate(oneDayAgoStart.getDate() - 1);
+        oneDayAgoStart.setHours(0, 0, 0, 0);
+
+        const oneDayAgoEnd = new Date(oneDayAgoStart);
+        oneDayAgoEnd.setHours(23, 59, 59, 999);
+
+        const { data: day1Users, error: err1 } = await supabase
+            .from('conversions')
+            .select('keyword, source, url')
+            .eq('type', 'email_capture')
+            .gte('created_at', oneDayAgoStart.toISOString())
+            .lte('created_at', oneDayAgoEnd.toISOString());
+
+        if (err1) throw err1;
+        console.log("Found " + (day1Users ? day1Users.length : 0) + " users for Day 1 emails.");
+
+        const day1SentEmails = new Set();
+        if (day1Users) {
+            for (const user of day1Users) {
+                const email = user.source;
+                if (email && email.includes('@') && !day1SentEmails.has(email)) {
+                    const isHeight = user.url === 'height';
+                    await emailService.sendDay1Email(email, isHeight);
+                    day1SentEmails.add(email);
+                }
+            }
+        }
+
+        // ============================================
+        // 2. Send Day 3 Follow Up
         // ============================================
         const threeDaysAgoStart = new Date();
         threeDaysAgoStart.setDate(threeDaysAgoStart.getDate() - 3);
@@ -71,7 +103,7 @@ const runEmailAutomation = async () => {
             }
         }
 
-        return { day3Sent: day3SentEmails.size, day7Sent: day7SentEmails.size };
+        return { day1Sent: day1SentEmails.size, day3Sent: day3SentEmails.size, day7Sent: day7SentEmails.size };
 
     } catch (error) {
         console.error("Automation Error:", error);

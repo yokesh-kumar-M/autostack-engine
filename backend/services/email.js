@@ -39,6 +39,29 @@ const heightTemplates = {
             <p style="font-size:12px;color:#777;">Sent because you requested an analysis at niche-report-ai.vercel.app. Reply STOP to unsubscribe.</p>
         </div>`
     }),
+    day1: (email) => ({
+        from: '"Peak Potential AI" <' + OWNER_EMAIL + '>',
+        to: email,
+        subject: 'Quick question about your height goals 🎯',
+        html: `<div style="font-family:Arial,sans-serif;line-height:1.6;max-width:600px;margin:0 auto;color:#333;">
+            <p>Hey,</p>
+            <p>Quick follow-up from yesterday's analysis.</p>
+            <p>Did you know that <strong>HGH production declines by 14% every decade after age 20</strong>? This means the earlier you start optimizing, the better your results will be.</p>
+            <p>Here's what most people don't realize about height growth:</p>
+            <ul>
+                <li>Your spine compresses by 1-3cm throughout the day — decompression can reverse this permanently</li>
+                <li>L-arginine before sleep can spike HGH by 700% — but timing and dosage matter hugely</li>
+                <li>Poor posture alone can steal 1-3 inches of your actual height</li>
+            </ul>
+            <p>The <strong>HGH Optimization Protocol</strong> covers the exact science — dosages, timing, cycling schedules, and what to avoid:</p>
+            <p><a href="${HGH_URL}" style="color:#F4A81D;font-weight:bold;">🩸 Get the HGH Protocol (₹999) →</a></p>
+            <p>Or if you want the complete 12-week system:</p>
+            <p><a href="${GUMBI_MODE_URL}" style="color:#F4A81D;font-weight:bold;">🧬 Gumbi Mode Protocol (₹2,199) →</a></p>
+            <p>— Yokesh</p>
+            <hr style="margin-top:40px;border:none;border-top:1px solid #eee;"/>
+            <p style="font-size:12px;color:#777;">Sent because you requested a report at niche-report-ai.vercel.app. Reply STOP to unsubscribe.</p>
+        </div>`
+    }),
     day3: (email) => ({
         from: '"Peak Potential AI" <' + OWNER_EMAIL + '>',
         to: email,
@@ -92,6 +115,25 @@ const nicheTemplates = {
             <p><strong>📘 The Ultimate Niche Research Playbook (₹2,499+):</strong><br/>
             <a href="${PLAYBOOK_URL}" style="color:#F4A81D;font-weight:bold;">Get The Playbook →</a></p>
             <p>To your success,<br/>Yokesh, Founder of NicheReport.ai</p>
+            <hr style="margin-top:40px;border:none;border-top:1px solid #eee;"/>
+            <p style="font-size:12px;color:#777;">Sent because you requested a report at niche-report-ai.vercel.app. Reply STOP to unsubscribe.</p>
+        </div>`
+    }),
+    day1: (email) => ({
+        from: '"NicheReport AI" <' + OWNER_EMAIL + '>',
+        to: email,
+        subject: 'The #1 reason niche businesses fail 💀',
+        html: `<div style="font-family:Arial,sans-serif;line-height:1.6;max-width:600px;margin:0 auto;color:#333;">
+            <p>Hey,</p>
+            <p>Quick follow-up from yesterday.</p>
+            <p>After analyzing thousands of niche businesses, here's the brutal truth: <strong>90% fail because they skip validation</strong>.</p>
+            <p>They pick a niche that "sounds good," build a website, create content... then wonder why nobody buys.</p>
+            <p>The fix is simple: validate BEFORE you build. Check search volume, analyze competitor revenue, test with a minimum viable offer.</p>
+            <p>Our <strong>50 Profitable Micro-Niche Templates</strong> give you 50 pre-validated niches with exact search data, CPC, and monetization blueprints — so you skip straight to the ones that work:</p>
+            <p><a href="${TEMPLATES_URL}" style="color:#F4A81D;font-weight:bold;">📊 Get 50 Pre-Validated Niches ($42+) →</a></p>
+            <p>Or get the complete system for finding your own:</p>
+            <p><a href="${PLAYBOOK_URL}" style="color:#F4A81D;font-weight:bold;">📘 Niche Research Playbook (₹2,499+) →</a></p>
+            <p>— Yokesh</p>
             <hr style="margin-top:40px;border:none;border-top:1px solid #eee;"/>
             <p style="font-size:12px;color:#777;">Sent because you requested a report at niche-report-ai.vercel.app. Reply STOP to unsubscribe.</p>
         </div>`
@@ -225,6 +267,11 @@ const sendWelcomeEmail = (email, isHeight = false) => {
     return send(templates.day0(email));
 };
 
+const sendDay1Email = (email, isHeight = false) => {
+    const templates = isHeight ? heightTemplates : nicheTemplates;
+    return send(templates.day1(email));
+};
+
 const sendDay3Email = (email, isHeight = false) => {
     const templates = isHeight ? heightTemplates : nicheTemplates;
     return send(templates.day3(email));
@@ -310,6 +357,7 @@ const sendReportEmail = async (email, keyword, htmlContent) => {
 
 module.exports = {
     sendWelcomeEmail,
+    sendDay1Email,
     sendDay3Email,
     sendDay7Email,
     notifyNewLead,

@@ -109,7 +109,7 @@ IMPORTANT: Throughout the report, naturally weave in these EXACT placeholders:
 [AFFILIATE:height primary]
 [AFFILIATE:height bundle]
 
-Make the report scientifically grounded, citing real mechanisms (HGH, IGF-1, spinal decompression, bone remodeling). Be authoritative and specific with numbers and protocols. Format beautifully with paragraphs, lists, and bold text. Output valid HTML tags directly — no markdown codeblock wrappers.`;
+Make the report scientifically grounded, citing real mechanisms (HGH, IGF-1, spinal decompression, bone remodeling). Be authoritative and specific with numbers and protocols. Include specific dosages, timing windows, and measurable outcomes. Create urgency by explaining what happens when people DON'T optimize (lost potential, disc compression, HGH decline with age). End each section with a clear call-to-action using the affiliate placeholders. Format beautifully with paragraphs, lists, and bold text. Output valid HTML tags directly — no markdown codeblock wrappers.`;
                 } else {
                     systemPrompt = `You are NicheReport AI, a highly specialized market research AI. Generate a comprehensive 1,200-word niche research report formatted in HTML for the given keyword.
 The report MUST contain the following exact H2 headings:
@@ -126,7 +126,7 @@ IMPORTANT: Throughout the report, naturally weave in these EXACT placeholders wh
 [AFFILIATE:SEO software]
 [AFFILIATE:hosting service]
 
-Make the report highly valuable, insightful, actionable, and formatted beautifully with well-spaced paragraphs, lists, and bold text. Output valid HTML tags directly — no markdown codeblock wrappers.`;
+Make the report highly valuable, insightful, actionable, and formatted beautifully with well-spaced paragraphs, lists, and bold text. Include specific revenue estimates, traffic numbers, and actionable first steps. In the Monetization section, emphasize that having a proven playbook dramatically increases success rate. In the Premium Upgrade CTA section, position the products as the natural next step after reading this free report. Output valid HTML tags directly — no markdown codeblock wrappers.`;
                 }
 
                 const model = genAI.getGenerativeModel({

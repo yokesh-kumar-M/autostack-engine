@@ -69,7 +69,7 @@
             <div class="nav-links">
                 <a href="#how-it-works">How It Works</a>
                 <a href="height-growth.html">Height Growth</a>
-                <a href="#faq">FAQ</a>
+                <a href="grow-taller-naturally.html">Grow Taller Guide</a>
                 <a href="app.html" class="btn btn-nav">Launch Tool →</a>
             </div>
             <button class="mobile-menu-btn" aria-label="Menu">☰</button>
@@ -79,7 +79,7 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container hero-container">
-            <div class="hero-badge">🔥 <span id="live-report-count">1,247</span>+ reports generated this week</div>
+            <div class="hero-badge">🔥 Free AI-Powered Research — No Signup Required</div>
             <h1 class="hero-title">
                 Discover Your Next<br>
                 <span class="typewriter" id="typewriter"></span>
@@ -129,8 +129,8 @@
             <!-- Trust Indicators -->
             <div class="trust-bar">
                 <div class="trust-item">
-                    <span class="trust-number" data-count="1247">0</span>
-                    <span class="trust-label">Reports Generated</span>
+                    <span class="trust-number">AI</span>
+                    <span class="trust-label">Powered Reports</span>
                 </div>
                 <div class="trust-divider"></div>
                 <div class="trust-item">
@@ -152,7 +152,7 @@
             <!-- Live Activity Ticker -->
             <div class="activity-ticker" id="activity-ticker">
                 <span class="ticker-dot"></span>
-                <span class="ticker-text" id="ticker-text">Someone in Mumbai just generated a report on "AI writing tools"</span>
+                <span class="ticker-text" id="ticker-text">💡 Tip: Try searching "grow taller naturally" for a free height optimization report</span>
             </div>
 
         <!-- Animated background particles -->
@@ -384,8 +384,8 @@
                 </div>
                 <div class="footer-links">
                     <h4>Resources</h4>
-                    <a href="#">Blog</a>
-                    <a href="#">Niche Ideas</a>
+                    <a href="grow-taller-naturally.html">How to Grow Taller</a>
+                    <a href="increase-height-after-18.html">Height After 18</a>
                     <a href="https://yokeshkumar.gumroad.com/affiliates" target="_blank" rel="noopener">Affiliate Program</a>
                 </div>
                 <div class="footer-links">
@@ -523,26 +523,19 @@
         // ===== Live Report Count from backend =====
         (async () => {
             try {
-                const res = await fetch('https://autostack-api-production.onrender.com/health');
-                // Just a pulse check; we show an incrementing live count
-                const base = 1247;
-                const rand = Math.floor(Math.random() * 80);
-                const live = base + rand;
-                document.getElementById('live-report-count').textContent = live.toLocaleString();
-                const trustEl = document.getElementById('trust-reports');
-                if (trustEl) trustEl.dataset.count = live;
+                await fetch('https://autostack-api-production.onrender.com/health');
+                // Backend is alive — no fake counts
             } catch(e) {}
         })();
 
-        // ===== Live Activity Ticker =====
+        // ===== Useful tip ticker =====
         const tickerActivities = [
-            'Someone in Singapore just generated a report on "AI productivity tools"',
-            'A user in New York generated a report on "passive income for developers"',
-            'Someone in London just searched "dropshipping pet products 2026"',
-            'A freelancer in Berlin generated a report on "UX design micro-niche"',
-            'Someone in Toronto searched "print on demand low competition"',
-            'A user in Mumbai just ran a report on "AI tools for teachers"',
-            'Someone in Sydney generated a report on "newsletter niche ideas"'
+            '💡 Tip: Try searching "grow taller naturally" for a free height optimization report',
+            '💡 Tip: Enter any keyword to get a comprehensive AI market analysis in 30 seconds',
+            '💡 Tip: Our AI analyzes competitors, monetization, and content strategy for any niche',
+            '🧬 New: Height growth analysis now available — click "Height Growth" in the menu',
+            '💡 Tip: Get a free HGH optimization report — search "HGH optimization protocol"',
+            '💡 Tip: Search "profitable niches 2026" for the latest AI-curated opportunities'
         ];
         let tickerIdx = 0;
         const tickerEl = document.getElementById('ticker-text');

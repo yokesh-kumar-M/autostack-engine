@@ -1,0 +1,14 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0D1B2A"/>
+      <stop offset="100%" style="stop-color:#1B2D45"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <text x="600" y="200" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#F4A81D" text-anchor="middle">◆ NicheReport.ai</text>
+  <text x="600" y="300" font-family="Arial, sans-serif" font-size="36" fill="#FFFFFF" text-anchor="middle">Free AI-Powered Niche Research Tool</text>
+  <text x="600" y="370" font-family="Arial, sans-serif" font-size="24" fill="#9FB3C8" text-anchor="middle">Discover Profitable Niches in 30 Seconds</text>
+  <rect x="400" y="430" width="400" height="60" rx="8" fill="#F4A81D"/>
+  <text x="600" y="470" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#0D1B2A" text-anchor="middle">Generate Free Report →</text>
+</svg>
