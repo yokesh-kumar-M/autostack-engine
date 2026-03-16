@@ -46,8 +46,10 @@ router.post('/ping', async (req, res) => {
             });
         }
 
-        // Notify owner immediately — this is revenue!
-        await emailService.notifyGumroadSale(productName, price, buyerEmail);
+        // Notify owner immediately — this is revenue! (fire and forget, don't block response)
+        emailService.notifyGumroadSale(productName, price, buyerEmail).catch(err => 
+            console.error('Sale notification email failed:', err.message)
+        );
 
         console.log('✅ Gumroad Sale processed: ' + productName + ' $' + (price / 100).toFixed(2));
         res.json({ success: true });
