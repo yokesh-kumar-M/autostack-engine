@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | NicheReport.ai</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0D1B2A; color: #fff; min-height: 100vh; }
+        
+        .dashboard-header { background: linear-gradient(135deg, #1a2f4a 0%, #0D1B2A 100%); padding: 20px 40px; border-bottom: 1px solid rgba(244,168,29,0.3); }
+        .dashboard-header h1 { color: #F4A81D; font-size: 1.5rem; }
+        .dashboard-header .logo { display: flex; align-items: center; gap: 10px; }
+        .dashboard-header .logo-icon { font-size: 1.8rem; }
+        
+        .stats-container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px; }
+        
+        .stat-card { background: linear-gradient(135deg, #1B2838 0%, #0f172a 100%); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 28px; transition: all 0.3s; }
+        .stat-card:hover { transform: translateY(-4px); border-color: rgba(244,168,29,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        
+        .stat-card.primary { background: linear-gradient(135deg, rgba(244,168,29,0.15) 0%, rgba(244,168,29,0.05) 100%); border-color: rgba(244,168,29,0.3); }
+        .stat-card.success { background: linear-gradient(135deg, rgba(34,197,94,0.15) 0%, rgba(34,197,94,0.05) 100%); border-color: rgba(34,197,94,0.3); }
+        
+        .stat-label { color: #9FB3C8; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .stat-value { font-size: 2.8rem; font-weight: 800; color: #fff; }
+        .stat-card.primary .stat-value { color: #F4A81D; }
+        .stat-card.success .stat-value { color: #22c55e; }
+        .stat-change { font-size: 0.85rem; color: #22c55e; margin-top: 8px; }
+        
+        .section-title { font-size: 1.4rem; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .section-title span { color: #F4A81D; }
+        
+        .table-card { background: #1B2838; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+        .table-card table { width: 100%; border-collapse: collapse; }
+        .table-card th { background: #0f172a; padding: 16px 20px; text-align: left; color: #9FB3C8; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+        .table-card td { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .table-card tr:last-child td { border-bottom: none; }
+        .table-card tr:hover { background: rgba(244,168,29,0.05); }
+        
+        .keyword-tag { background: rgba(244,168,29,0.15); color: #F4A81D; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; }
+        .revenue-tag { color: #22c55e; font-weight: 600; }
+        
+        .two-column { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+        @media (max-width: 1024px) { .two-column { grid-template-columns: 1fr; } }
+        
+        .system-status { background: #1B2838; border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.1); }
+        .system-status h3 { color: #fff; margin-bottom: 20px; }
+        .status-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .status-item:last-child { border-bottom: none; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 10px; }
+        .status-dot.active { background: #22c55e; box-shadow: 0 0 10px #22c55e; }
+        .status-dot.inactive { background: #ef4444; }
+        
+        .refresh-btn { background: #F4A81D; color: #0D1B2A; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .refresh-btn:hover { background: #f7b731; transform: translateY(-2px); }
+        
+        .loading { opacity: 0.5; pointer-events: none; }
+        .last-updated { color: #666; font-size: 0.85rem; margin-top: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="logo">
+            <span class="logo-icon">◆</span>
+            <h1>NicheReport<span style="color:#F4A81D">.ai</span> Dashboard</h1>
+        </div>
+    </header>
+
+    <div class="stats-container">
+        <div class="stats-grid">
+            <div class="stat-card primary">
+                <div class="stat-label">Total Revenue</div>
+                <div class="stat-value" id="totalRevenue">₹0</div>
+                <div class="stat-change" id="weeklyRevenue">+₹0 this week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Hits</div>
+                <div class="stat-value" id="totalHits">0</div>
+                <div class="stat-change">Report generations</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-label">Sales</div>
+                <div class="stat-value" id="totalSales">0</div>
+                <div class="stat-change">Gumroad transactions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Leads</div>
+                <div class="stat-value" id="totalLeads">0</div>
+                <div class="stat-change" id="affiliateClicks">+0 affiliate clicks</div>
+            </div>
+        </div>
+
+        <div class="two-column">
+            <div class="table-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Top Keywords</th>
+                            <th>Searches</th>
+                            <th>Trend</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topKeywords">
+                        <tr><td colspan="3" style="text-align:center;color:#666;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="system-status">
+                <h3>System Status</h3>
+                <div class="status-item">
+                    <span><span class="status-dot active"></span>API Server</span>
+                    <span style="color:#22c55e;">Online</span>
+                </div>
+                <div class="status-item">
+                    <span><span class="status-dot active"></span>Database</span>
+                    <span style="color:#22c55e;">Connected</span>
+                </div>
+                <div class="status-item">
+                    <span><span class="status-dot active"></span>Gumroad</span>
+                    <span style="color:#22c55e;">Active</span>
+                </div>
+                <div class="status-item">
+                    <span><span class="status-dot active"></span>Email</span>
+                    <span style="color:#22c55e;">Ready</span>
+                </div>
+                <div style="margin-top:20px;">
+                    <button class="refresh-btn" onclick="loadStats()">↻ Refresh Stats</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-card" style="margin-top:24px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Recent Sales</th>
+                        <th>Revenue</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="recentSales">
+                    <tr><td colspan="3" style="text-align:center;color:#666;">No sales yet</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="last-updated" id="lastUpdated">Last updated: --</p>
+    </div>
+
+    <script>
+        const API_BASE = 'https://autostack-api-production.onrender.com';
+        const ADMIN_KEY = localStorage.getItem('admin_key') || prompt('Enter admin password:');
+        
+        if (ADMIN_KEY) localStorage.setItem('admin_key', ADMIN_KEY);
+
+        async function loadStats() {
+            const btns = document.querySelectorAll('.refresh-btn');
+            btns.forEach(b => b.classList.add('loading'));
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/admin/stats`, {
+                    headers: { 'x-admin-password': ADMIN_KEY }
+                });
+                
+                if (!res.ok) throw new Error('Unauthorized');
+                
+                const data = await res.json();
+                
+                document.getElementById('totalRevenue').textContent = `₹${data.revenue.total.toLocaleString()}`;
+                document.getElementById('weeklyRevenue').textContent = `+₹${data.revenue.weekly.toLocaleString()} this week`;
+                document.getElementById('totalHits').textContent = data.hits.total.toLocaleString();
+                document.getElementById('totalSales').textContent = data.revenue.sales;
+                document.getElementById('totalLeads').textContent = data.leads.total;
+                document.getElementById('affiliateClicks').textContent = `+${data.leads.affiliateClicks} clicks`;
+                
+                // Top Keywords
+                const keywordsHtml = data.topKeywords.length > 0 
+                    ? data.topKeywords.map(k => `
+                        <tr>
+                            <td><span class="keyword-tag">${k.keyword}</span></td>
+                            <td>${k.count}</td>
+                            <td style="color:#22c55e;">↑</td>
+                        </tr>
+                    `).join('')
+                    : '<tr><td colspan="3" style="text-align:center;color:#666;">No data yet</td></tr>';
+                document.getElementById('topKeywords').innerHTML = keywordsHtml;
+                
+                // Recent Sales
+                const salesHtml = data.recentSales.length > 0
+                    ? data.recentSales.map(s => `
+                        <tr>
+                            <td>${s.product}</td>
+                            <td class="revenue-tag">₹${s.revenue.toLocaleString()}</td>
+                            <td>${new Date(s.date).toLocaleDateString()}</td>
+                        </tr>
+                    `).join('')
+                    : '<tr><td colspan="3" style="text-align:center;color:#666;">No sales yet</td></tr>';
+                document.getElementById('recentSales').innerHTML = salesHtml;
+                
+                document.getElementById('lastUpdated').textContent = `Last updated: ${new Date().toLocaleString()}`;
+                
+            } catch (err) {
+                console.error(err);
+                alert('Error loading stats. Check admin password.');
+            } finally {
+                btns.forEach(b => b.classList.remove('loading'));
+            }
+        }
+
+        loadStats();
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html>

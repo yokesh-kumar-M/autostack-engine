@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const supabase = require('../services/supabase');
 const { automateProductCreation } = require('../services/productAutomation');
 const emailService = require('../services/email');
 
@@ -14,6 +15,137 @@ const adminAuth = (req, res, next) => {
 };
 
 router.use(adminAuth);
+
+// Get comprehensive stats (Revenue & Hits)
+router.get('/stats', async (req, res) => {
+    try {
+        if (!supabase) {
+            return res.json({ 
+                hits: 0, 
+                revenue: 0, 
+                leads: 0, 
+                affiliateClicks: 0,
+                gumroadSales: 0,
+                message: 'Supabase not configured' 
+            });
+        }
+
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+        const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString();
+        const monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+        // Get total stats
+        const [queriesResult, conversionsResult] = await Promise.all([
+            supabase.from('queries').select('*', { count: 'exact', head: true }),
+            supabase.from('conversions').select('*')
+        ]);
+
+        const totalQueries = queriesResult.count || 0;
+        const conversions = conversionsResult.data || [];
+
+        // Calculate revenue from gumroad_sale
+        const gumroadSales = conversions.filter(c => c.type === 'gumroad_sale');
+        const totalRevenue = gumroadSales.reduce((sum, c) => sum + (parseFloat(c.revenue) || 0), 0);
+
+        // Other metrics
+        const leads = conversions.filter(c => c.type === 'email_capture').length;
+        const affiliateClicks = conversions.filter(c => c.type === 'affiliate_click').length;
+
+        // Weekly stats
+        const weeklyConversions = conversions.filter(c => new Date(c.created_at) >= weekAgo);
+        const weeklyRevenue = weeklyConversions
+            .filter(c => c.type === 'gumroad_sale')
+            .reduce((sum, c) => sum + (parseFloat(c.revenue) || 0), 0);
+        const weeklyHits = totalQueries; // This would need date filtering for accurate weekly
+
+        // Top keywords
+        const keywordCounts = {};
+        const { data: recentQueries } = await supabase
+            .from('queries')
+            .select('keyword')
+            .order('created_at', { ascending: false })
+            .limit(100);
+        
+        if (recentQueries) {
+            recentQueries.forEach(q => {
+                keywordCounts[q.keyword] = (keywordCounts[q.keyword] || 0) + 1;
+            });
+        }
+        
+        const topKeywords = Object.entries(keywordCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10)
+            .map(([keyword, count]) => ({ keyword, count }));
+
+        // Recent sales
+        const recentSales = gumroadSales
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+            .slice(0, 10)
+            .map(s => ({
+                product: s.keyword,
+                revenue: s.revenue,
+                date: s.created_at
+            }));
+
+        res.json({
+            hits: {
+                total: totalQueries,
+                today: today,
+            },
+            revenue: {
+                total: totalRevenue,
+                currency: 'INR',
+                weekly: weeklyRevenue,
+                sales: gumroadSales.length
+            },
+            leads: {
+                total: leads,
+                affiliateClicks
+            },
+            topKeywords,
+            recentSales,
+            system: {
+                gemini: 'configured',
+                supabase: 'connected',
+                gumroad: 'webhook_active'
+            }
+        });
+
+    } catch (error) {
+        console.error('Stats error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Simple public stats endpoint (for display, no auth needed)
+router.get('/public-stats', async (req, res) => {
+    try {
+        if (!supabase) {
+            return res.json({ hits: '0', revenue: '₹0' });
+        }
+
+        const { count } = await supabase
+            .from('queries')
+            .select('*', { count: 'exact', head: true });
+
+        const { data: conversions } = await supabase
+            .from('conversions')
+            .select('revenue')
+            .eq('type', 'gumroad_sale');
+
+        const totalRevenue = (conversions || [])
+            .reduce((sum, c) => sum + (parseFloat(c.revenue) || 0), 0);
+
+        res.json({
+            hits: (count || 0).toLocaleString(),
+            revenue: `₹${totalRevenue.toLocaleString()}`
+        });
+
+    } catch (error) {
+        res.json({ hits: '0', revenue: '₹0' });
+    }
+});
 
 // Trigger product automation (AI Content -> PDF -> Gumroad Listing)
 router.post('/create-product', async (req, res) => {

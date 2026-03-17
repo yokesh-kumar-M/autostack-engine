@@ -352,16 +352,25 @@
 
     <!-- Exit Intent Popup -->
     <div id="exit-popup" class="exit-popup-overlay" style="display:none;">
-        <div class="exit-popup-card">
+        <div class="exit-popup-card" id="exit-popup-card">
             <button class="exit-popup-close" id="exit-popup-close">✕</button>
-            <div class="exit-popup-icon">🎁</div>
-            <h2 class="exit-popup-title">Wait! Get Your Free Niche Cheatsheet</h2>
-            <p class="exit-popup-subtitle">Enter your email and we'll send you our <strong>"Top 25 Untapped Niches for 2026"</strong> PDF — completely free.</p>
-            <form class="exit-popup-form" id="exit-popup-form">
-                <input type="email" id="exit-popup-email" placeholder="your@email.com" required class="exit-popup-input">
-                <button type="submit" class="btn btn-primary" style="width:100%;margin-top:10px;">Send Me The Cheatsheet →</button>
-            </form>
-            <p class="exit-popup-disclaimer">No spam. Unsubscribe anytime.</p>
+            <div id="exit-popup-content">
+                <!-- Content injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Stats Bar -->
+    <div class="floating-stats" id="floating-stats" style="display:none;">
+        <button class="floating-stats-close" onclick="document.getElementById('floating-stats').style.display='none'">✕</button>
+        <div class="floating-stat">
+            <div class="floating-stat-value" id="stat-hits">--</div>
+            <div class="floating-stat-label">Reports</div>
+        </div>
+        <div style="width:1px;height:30px;background:rgba(255,255,255,0.1);"></div>
+        <div class="floating-stat">
+            <div class="floating-stat-value" id="stat-revenue">--</div>
+            <div class="floating-stat-label">Revenue</div>
         </div>
     </div>
 
@@ -379,6 +388,7 @@
                     <h4>Product</h4>
                     <a href="app.html">Niche Research Tool</a>
                     <a href="height-growth.html">Height Growth Analysis</a>
+                    <a href="dashboard.html">📊 Dashboard</a>
                     <a href="#how-it-works">How It Works</a>
                     <a href="#faq">FAQ</a>
                 </div>
@@ -422,6 +432,21 @@
         .exit-popup-subtitle { color:#aaa; font-size:15px; margin:0 0 20px; line-height:1.5; }
         .exit-popup-input { width:100%; padding:13px 16px; border-radius:8px; border:1px solid #334155; background:#1e293b; color:#fff; font-size:15px; box-sizing:border-box; }
         .exit-popup-disclaimer { color:#555; font-size:12px; margin-top:10px; }
+        
+        /* Floating Stats Bar */
+        .floating-stats { position:fixed; bottom:20px; left:20px; background:linear-gradient(135deg,#0D1B2A,#1B2838); border:1px solid rgba(244,168,29,0.3); border-radius:12px; padding:12px 20px; z-index:9998; box-shadow:0 10px 30px rgba(0,0,0,0.4); display:flex; gap:20px; align-items:center; }
+        .floating-stat { text-align:center; }
+        .floating-stat-value { font-size:1.1rem; font-weight:700; color:#F4A81D; }
+        .floating-stat-label { font-size:0.65rem; color:#9FB3C8; text-transform:uppercase; letter-spacing:1px; }
+        .floating-stats-close { position:absolute; top:-8px; right:-8px; width:20px; height:20px; background:#ef4444; border-radius:50%; border:none; color:#fff; font-size:12px; cursor:pointer; line-height:1; }
+        
+        /* Urgent Popup */
+        .urgent-popup { border-color:#ef4444 !important; }
+        .urgent-badge { background:#ef4444; color:#fff; padding:4px 12px; border-radius:4px; font-size:12px; font-weight:700; display:inline-block; margin-bottom:10px; animation:pulse-badge 1s infinite; }
+        @keyframes pulse-badge { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
+        .countdown-timer { font-size:1.5rem; font-weight:800; color:#ef4444; margin:15px 0; }
+        
+        @media (max-width:600px) { .floating-stats { display:none; } }
     </style>
 
     <script>
@@ -520,13 +545,22 @@
             document.querySelector('.navbar').classList.toggle('scrolled', window.scrollY > 50);
         });
 
-        // ===== Live Report Count from backend =====
-        (async () => {
+        // ===== Live Stats from backend =====
+        const API_BASE = 'https://autostack-api-production.onrender.com';
+        
+        async function loadPublicStats() {
             try {
-                await fetch('https://autostack-api-production.onrender.com/health');
-                // Backend is alive — no fake counts
-            } catch(e) {}
-        })();
+                const res = await fetch(`${API_BASE}/api/admin/public-stats`);
+                const data = await res.json();
+                document.getElementById('stat-hits').textContent = data.hits;
+                document.getElementById('stat-revenue').textContent = data.revenue;
+                document.getElementById('floating-stats').style.display = 'flex';
+            } catch(e) {
+                // Silent fail
+            }
+        }
+        loadPublicStats();
+        setInterval(loadPublicStats, 60000);
 
         // ===== Useful tip ticker =====
         const tickerActivities = [
@@ -549,41 +583,110 @@
         }, 5000);
         tickerEl.style.transition = 'opacity 0.3s';
 
-        // ===== Exit Intent Popup =====
+        // ===== Enhanced Exit Intent Popup with Multiple Variations =====
+        const popupVariations = [
+            {
+                icon: '🎁', title: 'Wait! Get Your Free Niche Cheatsheet',
+                subtitle: 'Enter your email and we\'ll send you our <strong>"Top 25 Untapped Niches for 2026"</strong> PDF — completely free.',
+                cta: 'Send Me The Cheatsheet →', type: 'lead'
+            },
+            {
+                icon: '⚡', title: 'Limited Time: 50% Off All Products',
+                subtitle: 'Before you go — get <strong>50% OFF</strong> our complete Niche Research Toolkit. Offer expires in <span id="popup-countdown">2</span> minutes!',
+                cta: 'Claim 50% Discount Now', type: 'discount', urgent: true
+            },
+            {
+                icon: '📊', title: 'Don\'t Leave Money On The Table',
+                subtitle: 'Our users earn <strong>₹50,000+/month</strong> from the niches they discover. Get the complete playbook now.',
+                cta: 'Start Earning Today →', type: 'upsell'
+            }
+        ];
+        
+        let popupIndex = 0;
         let popupShown = false;
+        
+        function showPopup(variation) {
+            const content = document.getElementById('exit-popup-content');
+            const card = document.getElementById('exit-popup-card');
+            const urgent = variation.urgent ? 'urgent-popup' : '';
+            const urgentBadge = variation.urgent ? '<div class="urgent-badge">🔥 OFFER EXPIRING SOON</div>' : '';
+            const countdown = variation.type === 'discount' ? '<div class="countdown-timer" id="popup-timer">2:00</div>' : '';
+            
+            content.innerHTML = `
+                <div class="exit-popup-icon">${variation.icon}</div>
+                <h2 class="exit-popup-title">${variation.title}</h2>
+                ${urgentBadge}
+                <p class="exit-popup-subtitle">${variation.subtitle}</p>
+                ${countdown}
+                ${variation.type === 'lead' ? 
+                    `<form class="exit-popup-form" id="exit-popup-form">
+                        <input type="email" id="exit-popup-email" placeholder="your@email.com" required class="exit-popup-input">
+                        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:10px;">${variation.cta}</button>
+                    </form>
+                    <p class="exit-popup-disclaimer">No spam. Unsubscribe anytime.</p>` :
+                    `<a href="${variation.type === 'discount' ? 'https://yokeshkumar.gumroad.com/l/niche-playbook' : 'https://yokeshkumar.gumroad.com/l/niche-playbook'}" target="_blank" class="btn btn-primary" style="display:block;width:100%;padding:14px;">${variation.cta}</a>`
+                }
+            `;
+            card.className = 'exit-popup-card ' + urgent;
+            
+            if (variation.type === 'lead') {
+                document.getElementById('exit-popup-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('exit-popup-email').value;
+                    try {
+                        await fetch(`${API_BASE}/api/lead`, {
+                            method: 'POST',
+                            headers: {'Content-Type':'application/json'},
+                            body: JSON.stringify({ email, source: 'exit_popup' })
+                        });
+                    } catch(err) {}
+                    content.innerHTML = `<div style="padding:20px;text-align:center;"><div style="font-size:48px;">✅</div><h2 style="color:#fff;margin:16px 0 8px;">You're on the list!</h2><p style="color:#aaa;">Check your inbox — the cheatsheet is on its way.</p></div>`;
+                    setTimeout(() => { popup.style.display='none'; }, 3000);
+                });
+            }
+            
+            // Countdown for discount
+            if (variation.type === 'discount') {
+                let timeLeft = 120;
+                const timerEl = document.getElementById('popup-timer');
+                const countdownInterval = setInterval(() => {
+                    timeLeft--;
+                    const mins = Math.floor(timeLeft / 60);
+                    const secs = timeLeft % 60;
+                    timerEl.textContent = `${mins}:${secs.toString().padStart(2,'0')}`;
+                    if (timeLeft <= 0) clearInterval(countdownInterval);
+                }, 1000);
+            }
+        }
+        
         const popup = document.getElementById('exit-popup');
         document.addEventListener('mouseleave', (e) => {
             if (e.clientY < 20 && !popupShown && !sessionStorage.getItem('popup_dismissed')) {
                 popupShown = true;
+                showPopup(popupVariations[popupIndex]);
                 popup.style.display = 'flex';
             }
         });
-        // Mobile: show after 40s
+        
+        // Show different popup each time (rotate)
         setTimeout(() => {
             if (!popupShown && !sessionStorage.getItem('popup_dismissed')) {
                 popupShown = true;
+                popupIndex = 1; // Show discount popup on mobile
+                showPopup(popupVariations[popupIndex]);
                 popup.style.display = 'flex';
             }
-        }, 40000);
+        }, 30000);
+        
         document.getElementById('exit-popup-close').addEventListener('click', () => {
             popup.style.display = 'none';
             sessionStorage.setItem('popup_dismissed', '1');
         });
         popup.addEventListener('click', (e) => {
-            if (e.target === popup) { popup.style.display = 'none'; sessionStorage.setItem('popup_dismissed', '1'); }
-        });
-        document.getElementById('exit-popup-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('exit-popup-email').value;
-            try {
-                await fetch('https://autostack-api-production.onrender.com/api/lead', {
-                    method: 'POST',
-                    headers: {'Content-Type':'application/json'},
-                    body: JSON.stringify({ email, source: 'exit_popup' })
-                });
-            } catch(err) {}
-            popup.querySelector('.exit-popup-card').innerHTML = '<div style="padding:20px;text-align:center;"><div style="font-size:48px;">✅</div><h2 style="color:#fff;margin:16px 0 8px;">You\'re on the list!</h2><p style="color:#aaa;">Check your inbox — the cheatsheet is on its way.</p></div>';
-            setTimeout(() => { popup.style.display='none'; }, 3000);
+            if (e.target === popup) { 
+                popup.style.display = 'none'; 
+                sessionStorage.setItem('popup_dismissed', '1'); 
+            }
         });
 
         // ===== People Also Searched tags =====
