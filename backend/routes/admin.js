@@ -4,6 +4,127 @@ const supabase = require('../services/supabase');
 const { automateProductCreation } = require('../services/productAutomation');
 const emailService = require('../services/email');
 
+// ============================================================
+// PUBLIC ROUTES (No Auth Required)
+// ============================================================
+
+// Simple public stats endpoint (for display, no auth needed)
+router.get('/public-stats', async (req, res) => {
+    try {
+        if (!supabase) {
+            return res.json({ hits: '0', revenue: '₹0' });
+        }
+
+        const { count } = await supabase
+            .from('queries')
+            .select('*', { count: 'exact', head: true });
+
+        const { data: conversions } = await supabase
+            .from('conversions')
+            .select('revenue')
+            .eq('type', 'gumroad_sale');
+
+        const totalRevenue = (conversions || [])
+            .reduce((sum, c) => sum + (parseFloat(c.revenue) || 0), 0);
+
+        res.json({
+            hits: (count || 0).toLocaleString(),
+            revenue: `₹${totalRevenue.toLocaleString()}`
+        });
+
+    } catch (error) {
+        console.error('Public stats error:', error.message);
+        res.json({ hits: '0', revenue: '₹0' });
+    }
+});
+
+// System health check endpoint (public for debugging)
+router.get('/system-status', async (req, res) => {
+    try {
+        const status = {
+            uptime: Math.floor(process.uptime()),
+            timestamp: new Date().toISOString(),
+            environment: process.env.NODE_ENV || 'production',
+            services: {}
+        };
+
+        // Check Supabase
+        if (supabase) {
+            try {
+                const { error } = await supabase.from('queries').select('id').limit(1);
+                status.services.supabase = error ? 'error: ' + error.message : 'connected';
+            } catch (e) {
+                status.services.supabase = 'error: ' + e.message;
+            }
+        } else {
+            status.services.supabase = 'not configured';
+        }
+
+        // Check Gemini API key
+        const geminiKey = process.env.GEMINI_API_KEY || '';
+        status.services.gemini = (geminiKey && geminiKey !== 'placeholder-key' && !geminiKey.includes('xxxx')) ? 'configured' : 'not configured';
+
+        // Check Gumroad
+        status.services.gumroad = (process.env.GUMROAD_SELLER_ID) ? 'configured' : 'not configured';
+
+        // Check Twitter
+        const twitterKey = process.env.TWITTER_API_KEY || '';
+        status.services.twitter = (twitterKey && twitterKey !== 'your_twitter_api_key') ? 'configured' : 'not configured';
+
+        // Check Email
+        status.services.email = (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) ? 'configured' : 'not configured';
+
+        // Get recent queries
+        if (supabase && status.services.supabase === 'connected') {
+            try {
+                const { data: recentQueries } = await supabase
+                    .from('queries')
+                    .select('keyword, created_at')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                status.recentQueries = recentQueries || [];
+            } catch (e) {
+                status.recentQueries = [];
+            }
+
+            // Get conversion stats
+            try {
+                const { count: emailCaptures } = await supabase
+                    .from('conversions')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('type', 'email_capture');
+                
+                const { count: affiliateClicks } = await supabase
+                    .from('conversions')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('type', 'affiliate_click');
+                
+                const { count: sales } = await supabase
+                    .from('conversions')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('type', 'gumroad_sale');
+
+                status.conversions = {
+                    emailCaptures: emailCaptures || 0,
+                    affiliateClicks: affiliateClicks || 0,
+                    sales: sales || 0
+                };
+            } catch (e) {
+                status.conversions = { error: e.message };
+            }
+        }
+
+        res.json(status);
+    } catch (error) {
+        console.error('System status error:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ============================================================
+// PROTECTED ROUTES (Auth Required)
+// ============================================================
+
 // Simple admin protective middleware
 const adminAuth = (req, res, next) => {
     const password = req.headers['x-admin-password'];
@@ -33,7 +154,6 @@ router.get('/stats', async (req, res) => {
         const now = new Date();
         const today = now.toISOString().split('T')[0];
         const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString();
-        const monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString();
 
         // Get total stats
         const [queriesResult, conversionsResult] = await Promise.all([
@@ -57,7 +177,6 @@ router.get('/stats', async (req, res) => {
         const weeklyRevenue = weeklyConversions
             .filter(c => c.type === 'gumroad_sale')
             .reduce((sum, c) => sum + (parseFloat(c.revenue) || 0), 0);
-        const weeklyHits = totalQueries; // This would need date filtering for accurate weekly
 
         // Top keywords
         const keywordCounts = {};
@@ -118,35 +237,6 @@ router.get('/stats', async (req, res) => {
     }
 });
 
-// Simple public stats endpoint (for display, no auth needed)
-router.get('/public-stats', async (req, res) => {
-    try {
-        if (!supabase) {
-            return res.json({ hits: '0', revenue: '₹0' });
-        }
-
-        const { count } = await supabase
-            .from('queries')
-            .select('*', { count: 'exact', head: true });
-
-        const { data: conversions } = await supabase
-            .from('conversions')
-            .select('revenue')
-            .eq('type', 'gumroad_sale');
-
-        const totalRevenue = (conversions || [])
-            .reduce((sum, c) => sum + (parseFloat(c.revenue) || 0), 0);
-
-        res.json({
-            hits: (count || 0).toLocaleString(),
-            revenue: `₹${totalRevenue.toLocaleString()}`
-        });
-
-    } catch (error) {
-        res.json({ hits: '0', revenue: '₹0' });
-    }
-});
-
 // Trigger product automation (AI Content -> PDF -> Gumroad Listing)
 router.post('/create-product', async (req, res) => {
     const { keyword, price } = req.body;
@@ -158,9 +248,8 @@ router.post('/create-product', async (req, res) => {
     try {
         const result = await automateProductCreation(keyword, price || 9);
         
-        // Notify owner with the links and attached PDF
         await emailService.sendGenericEmail(
-            process.env.GMAIL_USER, // Assuming ownerEmail is process.env.GMAIL_USER
+            process.env.GMAIL_USER,
             `💡 MANUAL TRIGGER READY: ${keyword}`,
             `<div style="font-family: sans-serif; background: #0D1B2A; color: white; padding: 30px; border-radius: 8px;">
                 <h1 style="color: #4CAF50;">Product Asset Successfully Generated!</h1>
@@ -168,21 +257,22 @@ router.post('/create-product', async (req, res) => {
                 
                 <div style="background: #1B2A40; padding: 20px; border-radius: 5px; margin: 20px 0;">
                     <p><strong>Keyword:</strong> ${keyword}</p>
-                    <p><strong>Proposed Price:</strong> $${price || 9}</p>
+                    <p><strong>Proposed Price:</strong> ₹${price || 999}</p>
                 </div>
                 <h2>Next Steps</h2>
                 <ol style="color: #E2E8F0;">
                     <li>Download the attached PDF to your computer.</li>
                     <li>Go to your <a href="${result.gumroad_url}" style="color: #F4A81D;">Gumroad Dashboard</a>.</li>
                     <li>Create a New Product named "The Ultimate ${keyword} Blueprint".</li>
-                    <li>Upload the PDF and set the price to $${price || 9}.</li>
+                    <li>Upload the PDF and set the price to ₹${price || 999}.</li>
                 </ol>
             </div>`,
-            [{ filename: result.fileName, path: result.pdf_path }]
+            result.pdf_path ? [{ filename: result.fileName, path: result.pdf_path }] : []
         );
 
         res.json(result);
     } catch (error) {
+        console.error('Create product error:', error.message);
         res.status(500).json({ error: error.message });
     }
 });
@@ -190,13 +280,11 @@ router.post('/create-product', async (req, res) => {
 // Manual trigger for Twitter Auto-Poster
 router.post('/trigger-twitter', async (req, res) => {
     try {
-        const { startTwitterCron } = require('../automation/twitter-cron');
-        // We need to bypass the actual cron schedule and run the logic once.
-        // Let's refactor the logic into a separate service later, but for now, we'll extract it.
         const { runTwitterPost } = require('../automation/twitter-cron');
         const result = await runTwitterPost();
         res.json({ success: true, result });
     } catch (error) {
+        console.error('Twitter trigger error:', error.message);
         res.status(500).json({ error: error.message });
     }
 });
@@ -208,6 +296,7 @@ router.post('/trigger-emails', async (req, res) => {
         const result = await runEmailAutomation();
         res.json({ success: true, result });
     } catch (error) {
+        console.error('Email trigger error:', error.message);
         res.status(500).json({ error: error.message });
     }
 });
@@ -219,6 +308,7 @@ router.post('/trigger-digest', async (req, res) => {
         const result = await runWeeklyDigest();
         res.json({ success: true, result });
     } catch (error) {
+        console.error('Digest trigger error:', error.message);
         res.status(500).json({ error: error.message });
     }
 });

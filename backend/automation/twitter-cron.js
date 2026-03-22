@@ -61,14 +61,24 @@ const runTwitterPost = async () => {
         if (!finalTweet) {
             const fallbacks = {
                 height: [
-                    "L-arginine + L-glutamine taken before sleep can spike HGH by up to 700%. Most people sleep wrong.\n\nFree growth analysis → niche-report-ai.vercel.app #HeightGrowth #Biohacking",
-                    "Your intervertebral discs can expand with proper decompression. That's hidden height you're leaving on the table.\n\nFree analysis → niche-report-ai.vercel.app #Biohacking",
-                    "Deep sleep in complete darkness boosts HGH by 157%. Your phone's blue light is literally suppressing your growth.\n\nFree growth report → niche-report-ai.vercel.app #HGH"
+                    "L-arginine + L-glutamine taken before sleep can spike HGH by up to 700%. Most people sleep wrong.\n\nFree growth analysis → niche-report-ai.vercel.app",
+                    "Your intervertebral discs can expand with proper decompression. That's hidden height you're leaving on the table.\n\nFree analysis → niche-report-ai.vercel.app",
+                    "Deep sleep in complete darkness boosts HGH by 157%. Your phone's blue light is suppressing your growth.\n\nFree growth report → niche-report-ai.vercel.app",
+                    "Dead hangs for 60 seconds daily can recover 1-2cm of spinal compression. You're shrinking right now as you read this.\n\nFree growth report → niche-report-ai.vercel.app",
+                    "HGH optimization + spinal decompression + proper nutrition = real height gains. Not hype. Science.\n\nFree AI analysis → niche-report-ai.vercel.app",
+                    "Stop losing height to bad posture. Kyphosis is stealing 1-3 inches right now.\n\nFree growth analysis → niche-report-ai.vercel.app",
+                    "The 40/40/20 macro split fuels bone development. Most people eat completely wrong for growth.\n\nFree growth report → niche-report-ai.vercel.app",
+                    "Inversion therapy 10 min daily can add measurable height. Your discs are screaming for decompression.\n\nFree AI analysis → niche-report-ai.vercel.app"
                 ],
                 niche: [
-                    "The best niches aren't 'trending.' They're boring problems rich people pay to solve.\n\nFree AI niche report → niche-report-ai.vercel.app #Entrepreneurship",
-                    "Stop competing in saturated markets. Find the weird, specific niche nobody is serving yet.\n\nFree AI analysis → niche-report-ai.vercel.app #SideHustle",
-                    "80% of successful online businesses start with niche research. 90% of failing ones skip it.\n\nFree report → niche-report-ai.vercel.app #NicheResearch"
+                    "The best niches aren't 'trending.' They're boring problems rich people pay to solve.\n\nFree AI niche report → niche-report-ai.vercel.app",
+                    "Stop competing in saturated markets. Find the weird, specific niche nobody is serving yet.\n\nFree AI analysis → niche-report-ai.vercel.app",
+                    "80% of successful online businesses start with niche research. 90% of failing ones skip it.\n\nFree report → niche-report-ai.vercel.app",
+                    "Before you build ANYTHING, validate the niche. I built a free tool that does this in 30 seconds.\n\nniche-report-ai.vercel.app",
+                    "AI resume writing service. Pet memorials. Notion templates. These niches print money. Here's why.\n\nFree niche analysis → niche-report-ai.vercel.app",
+                    "The money is in the margins. Find the tiny niche with passionate buyers and zero competition.\n\nFree AI research → niche-report-ai.vercel.app",
+                    "Most entrepreneurs pick niches based on passion. Smart ones pick based on profit potential first.\n\nFree niche finder → niche-report-ai.vercel.app",
+                    "Local SEO for dentists. $500-2000/month retainers. Most dentists have ZERO online presence.\n\nFree niche research → niche-report-ai.vercel.app"
                 ]
             };
             const options = fallbacks[tweetType];
@@ -87,9 +97,10 @@ const runTwitterPost = async () => {
 };
 
 const startTwitterCron = () => {
-    // Run Mon, Wed, Fri, Sat at 10:00 AM UTC (3:30 PM IST — peak engagement)
-    console.log('Twitter Cron Job Registered (Mon/Wed/Fri/Sat at 10:00 UTC).');
-    cron.schedule('0 10 * * 1,3,5,6', runTwitterPost);
+    // Run Mon, Wed, Fri, Sat, Sun at 10:00 AM UTC (3:30 PM IST — peak engagement)
+    console.log('Twitter Cron Job Registered (Mon/Wed/Fri/Sat/Sun at 10:00 UTC).');
+    // Mon=1, Wed=3, Fri=5, Sat=6, Sun=0
+    cron.schedule('0 10 * * 1,3,5,6,0', runTwitterPost);
 };
 
 module.exports = { startTwitterCron, runTwitterPost };

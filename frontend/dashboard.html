@@ -112,20 +112,28 @@
             <div class="system-status">
                 <h3>System Status</h3>
                 <div class="status-item">
-                    <span><span class="status-dot active"></span>API Server</span>
-                    <span style="color:#22c55e;">Online</span>
+                    <span><span class="status-dot" id="apiStatus"></span>API Server</span>
+                    <span id="apiStatusText" style="color:#666;">Checking...</span>
                 </div>
                 <div class="status-item">
-                    <span><span class="status-dot active"></span>Database</span>
-                    <span style="color:#22c55e;">Connected</span>
+                    <span><span class="status-dot" id="dbStatus"></span>Database</span>
+                    <span id="dbStatusText" style="color:#666;">Checking...</span>
                 </div>
                 <div class="status-item">
-                    <span><span class="status-dot active"></span>Gumroad</span>
-                    <span style="color:#22c55e;">Active</span>
+                    <span><span class="status-dot" id="geminiStatus"></span>AI Engine</span>
+                    <span id="geminiStatusText" style="color:#666;">Checking...</span>
                 </div>
                 <div class="status-item">
-                    <span><span class="status-dot active"></span>Email</span>
-                    <span style="color:#22c55e;">Ready</span>
+                    <span><span class="status-dot" id="gumroadStatus"></span>Gumroad</span>
+                    <span id="gumroadStatusText" style="color:#666;">Checking...</span>
+                </div>
+                <div class="status-item">
+                    <span><span class="status-dot" id="emailStatus"></span>Email</span>
+                    <span id="emailStatusText" style="color:#666;">Checking...</span>
+                </div>
+                <div class="status-item">
+                    <span><span class="status-dot" id="twitterStatus"></span>Twitter Bot</span>
+                    <span id="twitterStatusText" style="color:#666;">Checking...</span>
                 </div>
                 <div style="margin-top:20px;">
                     <button class="refresh-btn" onclick="loadStats()">↻ Refresh Stats</button>
@@ -153,15 +161,63 @@
 
     <script>
         const API_BASE = 'https://autostack-api-production.onrender.com';
-        const ADMIN_KEY = localStorage.getItem('admin_key') || prompt('Enter admin password:');
-        
-        if (ADMIN_KEY) localStorage.setItem('admin_key', ADMIN_KEY);
+        const ADMIN_KEY = localStorage.getItem('admin_key');
+
+        function setStatus(id, textId, isActive, text) {
+            const dot = document.getElementById(id);
+            const textEl = document.getElementById(textId);
+            if (isActive) {
+                dot.classList.add('active');
+                textEl.style.color = '#22c55e';
+            } else {
+                dot.classList.add('inactive');
+                textEl.style.color = '#ef4444';
+            }
+            textEl.textContent = text;
+        }
+
+        async function loadSystemStatus() {
+            try {
+                const res = await fetch(`${API_BASE}/api/admin/system-status`);
+                const data = await res.json();
+                
+                // API Server
+                setStatus('apiStatus', 'apiStatusText', true, 'Online');
+                
+                // Database
+                const dbOk = data.services.supabase === 'connected';
+                setStatus('dbStatus', 'dbStatusText', dbOk, dbOk ? 'Connected' : 'Error');
+                
+                // Gemini
+                const geminiOk = data.services.gemini === 'configured';
+                setStatus('geminiStatus', 'geminiStatusText', geminiOk, geminiOk ? 'Configured' : 'Not Set');
+                
+                // Gumroad
+                const gumroadOk = data.services.gumroad === 'configured';
+                setStatus('gumroadStatus', 'gumroadStatusText', gumroadOk, gumroadOk ? 'Configured' : 'Not Set');
+                
+                // Email
+                const emailOk = data.services.email === 'configured';
+                setStatus('emailStatus', 'emailStatusText', emailOk, emailOk ? 'Configured' : 'Not Set');
+                
+                // Twitter
+                const twitterOk = data.services.twitter === 'configured';
+                setStatus('twitterStatus', 'twitterStatusText', twitterOk, twitterOk ? 'Configured' : 'Not Set');
+                
+            } catch (err) {
+                console.error('System status error:', err);
+                setStatus('apiStatus', 'apiStatusText', false, 'Offline');
+            }
+        }
 
         async function loadStats() {
             const btns = document.querySelectorAll('.refresh-btn');
             btns.forEach(b => b.classList.add('loading'));
             
             try {
+                // Load system status first
+                await loadSystemStatus();
+                
                 const res = await fetch(`${API_BASE}/api/admin/stats`, {
                     headers: { 'x-admin-password': ADMIN_KEY }
                 });
@@ -205,7 +261,13 @@
                 
             } catch (err) {
                 console.error(err);
-                alert('Error loading stats. Check admin password.');
+                if (err.message === 'Unauthorized') {
+                    const password = prompt('Enter admin password (check Render env: ADMIN_PASSWORD):');
+                    if (password) {
+                        localStorage.setItem('admin_key', password);
+                        location.reload();
+                    }
+                }
             } finally {
                 btns.forEach(b => b.classList.remove('loading'));
             }

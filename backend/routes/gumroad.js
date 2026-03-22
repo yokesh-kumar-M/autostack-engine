@@ -8,7 +8,7 @@ const { verifyWebhook } = require('../services/gumroad');
  * POST /api/gumroad/ping
  * Gumroad calls this endpoint every time a sale is made.
  * Configure it in: Gumroad Dashboard → Settings → Advanced → Ping
- * Ping URL: https://niche-report-ai.onrender.com/api/gumroad/ping
+ * Ping URL: https://autostack-api-production.onrender.com/api/gumroad/ping
  */
 router.post('/ping', async (req, res) => {
     try {
